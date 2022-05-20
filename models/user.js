@@ -41,7 +41,7 @@ const userDB = {
             }
             else {
                 console.log("Connected!");
-                var sql = "SELECT * FROM user";
+                var sql = "SELECT user.user_id, user.username, user.email, user.contact, user.role, user.profile_pic_url, user.created_at FROM user";
                 conn.query(sql, (err, result) => {
                     if (err) {
                         console.log(err);
