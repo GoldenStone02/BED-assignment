@@ -36,10 +36,15 @@
 
 * 2nd Bonus
 • Create endpoints related to the offering of discounts for promotional periods.
-• Your endpoints should include GET, POST, and DELETE. GET endpoints should provide 
-• info of promotion period and discount offered for particular flights. 
+• Your endpoints should include GET, POST, and DELETE. 
+• GET endpoints should provide info of promotion period and discount offered for particular flights. 
 • Note that the appropriate table(s) should be created in the database and 
 • that a flight can have multiple promotional periods.
+? This endpoint requires GET, POST and DELETE
+
+# Extra Features
+.. Async programming
+.. Uploading & Storage of images
 
 # Documentation
 
