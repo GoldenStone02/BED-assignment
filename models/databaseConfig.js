@@ -1,18 +1,28 @@
-var mysql = require('mysql')
-var dbconnect = {
-    getConnection: function () {
-        var conn = mysql.createConnection({
-            host: 'localhost',
-            user: 'root',
-            password: '1qwer$#@!',
-            database: 'sp_air',
-            dateStrings: true
-          });
-  
-      return conn;
+var mysql = require('mysql');
+
+// • Creates a pool connection instead of creating a new connection for each request.
+var pool = mysql.createPool({
+    connectionLimit: 10,
+    host: 'localhost',
+    user: 'root',
+    password: '1qwer$#@!',
+    database: 'sp_air'
+})
+
+pool.getConnection((err, connection) => {
+    if (err) {
+        if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+            console.error('Database connection was closed.')
+        }
+        if (err.code === 'ER_CON_COUNT_ERROR') {
+            console.error('Database has too many connections.')
+        }
+        if (err.code === 'ECONNREFUSED') {
+            console.error('Database connection was refused.')
+        }
     }
-};
-  
-// put this at the end of the file
-module.exports = dbconnect;
-  
+    if (connection) connection.release()
+    return
+})
+
+module.exports = pool
