@@ -64,21 +64,51 @@ app.get('/users', (req, res) => {
     User.getAllUsers((err, result) => {
         if (err) {
             res.status(500).send("500 Internal Server Error");
+            return;
         }
-        else {
-            res.status(200).send(result);
-        };
+        res.status(200).send(result);
     });
 })
 
 // • Endpoint 3 - GET /users/:id
 app.get('/users/:id', (req, res) => {
-
+    var user_id = req.params.id;
+    User.getUser(user_id, (err, result) => {
+        if (err) {
+            // Checks if user is in the database
+            if (err == "User not found") {
+                res.status(404).send("404 Not Found");
+                return;
+            }
+            res.status(500).send("500 Internal Server Error");
+            return;
+        }
+        res.status(200).send(result);
+    })
 })
 
 // • Endpoint 4 - PUT /users/:id
 app.put('/users/:id', (req, res) => {
+    var user_id = req.params.id;
+    var username = req.body.username;
+    var email = req.body.email;
+    var contact = req.body.contact;
+    var password = req.body.password;
+    var role = req.body.role;       // # [NOTE] Customer shouldn't be able to change to admin
+    var profile_pic_url = req.body.profile_pic_url;
 
+    User.updateUser(user_id, username, email, contact, password, role, profile_pic_url, (err, result) => {
+        if (err) {
+            if (err.code == "ER_DUP_ENTRY") {
+                res.status(422).send("422 Unprocessable Entity");
+                return;
+            }
+            res.status(500).send("500 Internal Server Error");
+            return;
+        }
+        // # Note, it doesn't show the content
+        res.status(204).send("204 No Content");
+    })
 })
 
 // • Endpoint 5 - POST /airport
