@@ -20,6 +20,7 @@ const userDB = {
                 console.log(err);
                 return callback(err, null);
             }
+            console.log(`${result.affectedRows} row has been affected`);
             return callback(null, result.affectedRows);
         });
     },
@@ -32,7 +33,7 @@ const userDB = {
                 console.log(err);
                 return callback(err, null);
             }
-            console.table(result[1])
+            console.table(result)
             return callback(null, result);
         });
     },
@@ -50,7 +51,7 @@ const userDB = {
                 return callback("User not found", null)
             }
             console.table(result)
-            return callback(null, result)
+            return callback(null, result[0])
         })
     },
     // .. PUT a user by userid

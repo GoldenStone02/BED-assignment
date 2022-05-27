@@ -4,10 +4,10 @@ const bodyParser = require('body-parser');
 const urlEncodedParser = bodyParser.urlencoded({ extended: false });
 const app = express(); // create an instance of express
 
-// const Airport = require('../models/airport');
-// const Booking = require('../models/booking');
-// const Flight = require('../models/flight');
 const User = require('../models/user');
+const Airport = require('../models/airport');
+const Flight = require('../models/flight');
+const Booking = require('../models/booking');
 
 
 // Middleware
@@ -113,37 +113,119 @@ app.put('/users/:id', (req, res) => {
 
 // • Endpoint 5 - POST /airport
 app.post('/airport', (req, res) => {
+    var name = req.body.name;
+    var country = req.body.country;
+    var description = req.body.description;
 
+    Airport.insertAirport(name, country, description, (err, result) => {
+        if (err) {
+            // Checks for Duplicate Entry
+            if (err.code == "ER_DUP_ENTRY") {
+                res.status(422).send("422 Unprocessable Entity");
+                return;
+            }
+            res.status(500).send("500 Internal Server Error");
+            return;
+        }
+        res.status(204).send("204 No Content");
+        return;
+    })
 })
 
 // • Endpoint 6 - GET /airport
 app.get('/airport', (req, res) => {
-
+    Airport.getAllAirports((err, result) => {
+        if (err) {
+            res.status(500).send("500 Internal Server Error");
+            return;
+        }
+        res.status(200).send(result);
+    })
 })
 
 // • Endpoint 7 - POST /flight
-app.get('/flight', (req, res) => {
+app.post('/flight', (req, res) => {
+    var flightCode = req.body.flightCode
+    var aircraft= req.body.aircraft
+    var originAirportID = req.body.originAirport
+    var destinationAirportID = req.body.destinationAirport
+    var embarkDate = req.body.embarkDate
+    var travelTime = req.body.travelTime
+    var price = req.body.price
 
+    Flight.insertFlight(flightCode, aircraft, originAirportID, destinationAirportID, embarkDate, travelTime, price, (err, result) => {
+        if (err) {
+            // Checks for Duplicate Entry
+            if (err.code == "ER_DUP_ENTRY") {
+                res.status(422).send("422 Unprocessable Entity");
+                return;
+            }
+            res.status(500).send("500 Internal Server Error");
+            return;
+        }
+        res.status(201).send({"flight_id": result});
+    })
 })
 
 // • Endpoint 8 - GET /flightDirect/:originAirportId/:destinationAirportId
-app.get('/flightDirect/:originAirportId/:destinationAirportId', (req, res) => {
+app.get('/flightDirect/:originAirportID/:destinationAirportID', (req, res) => {
+    var originAirportID = req.params.originAirportID;
+    var destinationAirportID = req.params.destinationAirportID;
 
+    Flight.getFlightDirect(originAirportID, destinationAirportID, (err, result) => {
+        if (err) {
+            res.status(500).send("500 Internal Server Error");
+            return;
+        }
+        res.status(200).send(result);
+    })
 })
 
 // • Endpoint 9 - POST /booking/:userid/:flightid
 app.get('/booking/:userid/:flightid', (req, res) => {
+    var user_id = req.params.userid
+    var flight_id = req.params.flightid
+    var name = req.body.name
+    var passport = req.body.passport
+    var nationality = req.body.nationality
+    var age = req.body.age
 
+    Booking.insertBooking(user_id, flight_id, name, passport, nationality, age, (err, result) => {
+        if (err) {
+            console.log(err)
+            res.status(500).send("500 Internal Server Error");
+            return
+        }
+        res.status(201).send({"booking_id": result});
+    })
 })
 
 // • Endpoint 10 - DELETE /flight/:id
 app.delete('/flight/:id', (req, res) => {
+    var flight_id = req.params.id;
 
+    Flight.deleteFlight(flight_id, (err, result) => {
+        if (err) {
+            res.status(500).send("500 Internal Server Error");
+            return;
+        }
+        res.status(200).send({"Message": "Deletion successful"});
+    })
 })
 
-// • Endpoint 11 - GET /transfer/flight/:originAirportId/:destinationAirportId
-app.get('/transfer/flight/:originAirportId/:destinationAirportId', (req, res) => {
+// • Endpoint 11 - GET /transfer/flight/:originAirportID/:destinationAirportID
+// ! WORK IN PROGRESS
+app.get('/transfer/flight/:originAirportID/:destinationAirportID', (req, res) => {
+    var originAirportID = req.params.originAirportID;
+    var destinationAirportID = req.params.destinationAirportID;
 
+    Flight.getFlightTransfer(originAirportID, destinationAirportID, (err, result) => {
+        if (err) {
+            res.status(500).send("500 Internal Server Error");
+            return;
+        }
+        res.status(201).send(result);
+    })
 })
 
 // 2 Bonus APIs

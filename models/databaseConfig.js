@@ -6,7 +6,9 @@ var pool = mysql.createPool({
     host: 'localhost',
     user: 'root',
     password: '1qwer$#@!',
-    database: 'sp_air'
+    database: 'sp_air',
+    dateStrings: true,          // .. Allows date to be returned as a string
+    multipleStatements: true    // .. Allows for multiline querying
 })
 
 pool.getConnection((err, connection) => {
