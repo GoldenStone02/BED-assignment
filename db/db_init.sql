@@ -1,35 +1,68 @@
-CREATE TABLE `sp_air`.`user` (
-  `user_id` INT NOT NULL AUTO_INCREMENT,
-  `username` VARCHAR(45) NOT NULL,
-  `email` VARCHAR(100) NOT NULL,
-  `contact` INT(8) NOT NULL,
-  `role` VARCHAR(45) NULL,
-  `profile_pic_url` VARCHAR(255) NULL,
-  `created_at` TIMESTAMP NULL,
-  PRIMARY KEY (`user_id`),
-  UNIQUE INDEX `username_UNIQUE` (`username` ASC) VISIBLE,
-  UNIQUE INDEX `email_UNIQUE` (`email` ASC) VISIBLE);
-
-
-
 -- ! The tables below will be the actual tables that will be used in the application
+CREATE DATABASE sp_air;
+
+use sp_air;
 
 CREATE TABLE user (
-	  id INT NOT NULL AUTO_INCREMENT,
-    username varchar(255) NOT NULL,
-    email VARCHAR(255) NOT NULL,
-    contact INT(8) NOT NULL,
-    password VARCHAR(255) NOT NULL,
+	  user_id INT NOT NULL AUTO_INCREMENT,
+    username varchar(100) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    contact VARCHAR(8) NOT NULL,
+    password VARCHAR(45) NOT NULL,
     role VARCHAR(45) NULL,
-    profile_pic_url VARCHAR(255) NULL,
+    profile_pic_url VARCHAR(45) NULL,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    PRIMARY KEY (id),
-    UNIQUE (username)
+    PRIMARY KEY (user_id)
 );
 
 CREATE TABLE airport (
-	  id INT NOT NULL AUTO_INCREMENT,
-    name varchar(255) NOT NULL,
-    country varchar(255) NOT NULL,
-    description VARCHAR(255) NOT NULL,
+	  airport_id INT NOT NULL AUTO_INCREMENT,
+    name VARCHAR(45) NOT NULL,
+    country VARCHAR(45) NOT NULL,
+    description VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE flight (
+    flight_id INT NOT NULL AUTO_INCREMENT
+    flightCode VARCHAR(45) NOT NULL,
+    aircraft VARCHAR(45) NOT NULL,
+    originAirport INT NOT NULL,
+    destinationAirport INT NOT NULL,
+    embarkDate VARCHAR(45) NOT NULL,
+    travelTime VARCHAR(45) NOT NULL,
+    price INT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (flight_id),
+    FOREIGN KEY (originAirport) REFERENCES airport(airport_id),
+    FOREIGN KEY (destinationAirport) REFERENCES airport(airport_id)
+);
+
+CREATE TABLE booking (
+    booking_id INT NOT NULL AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    flight_id INT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (booking_id),
+    FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE ON UPDATE NO ACTION,
+    FOREIGN KEY (flight_id) REFERENCES flight(flight_id) ON DELETE CASCADE ON UPDATE NO ACTION
+);
+
+-- .. Bonus Features to be added
+CREATE TABLE promotion (
+    promotion_id INT NOT NULL AUTO_INCREMENT,
+    flight_id INT NOT NULL,
+    promotion_start_date VARCHAR(45) NOT NULL,
+    promotion_end_date VARCHAR(45) NOT NULL,
+    discount_percent INT NOT NULL,
+    PRIMARY KEY (promotion_id),
+    FOREIGN KEY (flight_id) REFERENCES flight(flight_id) ON DELETE CASCADE ON UPDATE NO ACTION
+);
+
+-- # Used for storing of airline logos
+CREATE TABLE image (
+    image_id INT NOT NULL AUTO_INCREMENT,
+    flight_id INT NOT NULL,
+    image_url VARCHAR(255) NOT NULL,
+    PRIMARY KEY (image_id),
+    FOREIGN KEY (flight_id) REFERENCES flight(flight_id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
