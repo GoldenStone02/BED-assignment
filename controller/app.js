@@ -1,14 +1,22 @@
+/*
+    Name: Ng Jun Han
+    Admin: 2008493
+    Class: DISM/FT/2B/21
+*/
+
 // Import Libraries
 const express = require('express');
 const bodyParser = require('body-parser');
 const urlEncodedParser = bodyParser.urlencoded({ extended: false });
 const app = express(); // create an instance of express
 
+// Import Modules
 const User = require('../models/user');
 const Airport = require('../models/airport');
 const Flight = require('../models/flight');
 const Booking = require('../models/booking');
-
+const Transfer = require('../models/transfer');
+const Promotion = require('../models/promotion');
 
 // Middleware
 app.use(urlEncodedParser)   // attachs body-parser middleware
@@ -219,7 +227,7 @@ app.get('/transfer/flight/:originAirportID/:destinationAirportID', (req, res) =>
     var originAirportID = req.params.originAirportID;
     var destinationAirportID = req.params.destinationAirportID;
 
-    Flight.getFlightTransfer(originAirportID, destinationAirportID, (err, result) => {
+    Transfer.getFlightTransfer(originAirportID, destinationAirportID, (err, result) => {
         if (err) {
             res.status(500).send("500 Internal Server Error");
             return;
@@ -229,5 +237,46 @@ app.get('/transfer/flight/:originAirportID/:destinationAirportID', (req, res) =>
 })
 
 // 2 Bonus APIs
+// ! EVERYTHING BELOW IS WORK IN PROGRESS
+// ! DO NOT USE YET
+
+// # Image uploading and storage
+// # Used express file upload
+// • Endpoint 12
+
+// # Promotion API
+// • Endpoint 13 - POST /promotions
+app.post('/promotion', (req, res) => {
+    var flight_id = req.body.flight_id
+    var start_date = req.body.start_date
+    var end_date = req.body.end_date
+    var discount = req.body.discount
+
+    Promotion.insertPromotion((err, result) => {
+        if (err) {
+            res.status(500).send("500 Internal Server Error");
+            return;
+        }
+        res.status(201).send({"promotion_id": result});
+    })
+})
+
+// • Endpoint 14 - GET /promotions
+
+// • Endpoint 14 - GET /promotions/:id
+
+// • Endpoint 15 - DELETE /promotions/:id
+
+
+// ! NOT PART OF REQUIREMENT
+app.get('/flight', (req, res) => {
+    Flight.getAllFlights((err, result) => {
+        if (err) {
+            res.status(500).send("500 Internal Server Error");
+            return;
+        }
+        res.status(200).send(result);
+    })
+})
 
 module.exports = app

@@ -1,7 +1,7 @@
 {
   "name": "bed-project",
   "version": "1.0.0",
-  "description": "> Requirements\r .. Create a MYSQL database with necessary tables\r     - Tables include (examples)\r         • User\r         • flight\r         • airport\r         • bookings",
+  "description": "",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

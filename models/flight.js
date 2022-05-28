@@ -1,3 +1,9 @@
+/*
+    Name: Ng Jun Han
+    Admin: 2008493
+    Class: DISM/FT/2B/21
+*/
+
 const pool = require('../models/databaseConfig')
 
 const flightDB = {
@@ -20,15 +26,33 @@ const flightDB = {
             return callback(null, result[1][0].flight_id);
         })
     },
+    // .. GET all flights
+    // ! NOT IN REQUIREMENTS
+    getAllFlights: function (callback) {
+        console.log("Connected! Getting all flights...");
+        // Inserts a new flight, then gets the new flight
+        var sql = `
+        SELECT f.flight_id, f.flightCode, f.aircraft, a1.name as originAirport, a2.name as destinationAirport, f.embarkDate, f.travelTime, f.price 
+        FROM flight as f, airport as a1, airport as a2 
+        WHERE f.originAirport = a1.airport_id AND f.destinationAirport = a2.airport_id`;
+        // .. Get all flights
+        pool.query(sql, (err, result) => {
+            if (err) {
+                console.log(err);
+                return callback(err, null);
+            }
+            console.table(result)
+            return callback(null, result);
+        })
+    },
     // .. GET flight information
     getFlightDirect: function (origin_airport_id, destination_airport_id, callback) {
         console.log("Connected! Getting flight information...");
         var params = [origin_airport_id, destination_airport_id];
         var sql = `
-        use sp_air;
         SELECT f.flight_id, f.flightCode, f.aircraft, a1.name as originAirport, a2.name as destinationAirport, f.embarkDate, f.travelTime, f.price 
         FROM flight as f, airport as a1, airport as a2 
-        WHERE originAirport = 1 AND destinationAirport = 2 
+        WHERE originAirport = ? AND destinationAirport = ? 
         AND f.originAirport = a1.airport_id AND f.destinationAirport = a2.airport_id`;
 
         pool.query(sql, params, (err, result) => {
@@ -52,22 +76,6 @@ const flightDB = {
             var affectedRows = result[0].affectedRows + result[1].affectedRows;
             console.log(`${affectedRows} row has been affected`);
             return callback(null, affectedRows)
-        })
-    },
-    // .. GET all transfer flights
-    // ! WORK IN PROGRESS
-    // ! This function is not working properly
-    getTransferFlights: function (origin_airport_id, destination_airport_id, callback) {
-        console.log("Connected! Getting transfer flights...");
-        var params = [origin_airport_id, destination_airport_id];
-        var sql = ``
-        pool.query(sql, params, (err, result) => {
-            if (err) {
-                console.log(err)
-                return callback(err, null)
-            }
-            console.table(result[1])
-            return callback(null, result[1])
         })
     }
 }

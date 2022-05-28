@@ -1,7 +1,10 @@
-const pool = require('./databaseConfig')
+/*
+    Name: Ng Jun Han
+    Admin: 2008493
+    Class: DISM/FT/2B/21
+*/
 
-// ! [NOTE] Something is wrong with the database
-// * so please fix it soon.
+const pool = require('./databaseConfig')
 
 // Accesses the database and returns user table results.
 const userDB = {

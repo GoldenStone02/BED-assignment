@@ -1,3 +1,9 @@
+/*
+    Name: Ng Jun Han
+    Admin: 2008493
+    Class: DISM/FT/2B/21
+*/
+
 var mysql = require('mysql');
 
 // • Creates a pool connection instead of creating a new connection for each request.
