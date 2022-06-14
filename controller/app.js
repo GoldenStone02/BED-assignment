@@ -38,8 +38,20 @@ app.use(bodyParser.json())    // parse json
     • Endpoint 10 - DELETE /flight/:id
     • Endpoint 11 - GET /transfer/flight/:originAirportId/:destinationAirportId
 # 2 Bonus APIs
-    • Endpoint 12 - POST
-    • Endpoint 13
+    * 1st Bonus API - Image uploading and storage
+    • Endpoint 12 - POST /users/:id/profile
+    • Endpoint 13 - GET /users/:id/profile
+    • Endpoint 14 - PUT /users/:id/profile
+    • Endpoint 15 - DELETE /users/:id/profile
+
+    * 2nd Bonus API - Promotion
+    • Endpoint 16 - POST /promotion
+    • Endpoint 17 - GET /promotion/
+    • Endpoint 18 - GET /promotion/:id
+    • Endpoint 19 - PUT /promotion/:id
+    • Endpoint 20 - DELETE /promotion/:id
+
+    • Endpoint 21 - GET /flight (Gets all flights)
 */
 
 // • Endpoint 1 - POST /users/
@@ -227,7 +239,7 @@ app.get('/transfer/flight/:originAirportID/:destinationAirportID', (req, res) =>
     var originAirportID = req.params.originAirportID;
     var destinationAirportID = req.params.destinationAirportID;
 
-    Transfer.getFlightTransfer(originAirportID, destinationAirportID, (err, result) => {
+    Transfer.getTransferFlights(originAirportID, destinationAirportID, (err, result) => {
         if (err) {
             res.status(500).send("500 Internal Server Error");
             return;
@@ -242,10 +254,21 @@ app.get('/transfer/flight/:originAirportID/:destinationAirportID', (req, res) =>
 
 // # Image uploading and storage
 // # Used express file upload
-// • Endpoint 12
+
+// • Endpoint 12 - POST /users/:id/profile
+app.post('/users/:id/profile', (req, res) => {
+    
+})
+// • Endpoint 13 - GET /users/:id/profile
+
+// • Endpoint 14 - PUT /users/:id/profile
+
+// • Endpoint 15 - DELETE /users/:id/profile
+
 
 // # Promotion API
-// • Endpoint 13 - POST /promotions
+
+// • Endpoint 16 - POST /promotion
 app.post('/promotion', (req, res) => {
     var flight_id = req.body.flight_id
     var start_date = req.body.start_date
@@ -261,14 +284,17 @@ app.post('/promotion', (req, res) => {
     })
 })
 
-// • Endpoint 14 - GET /promotions
+// • Endpoint 17 - GET /promotion/
 
-// • Endpoint 14 - GET /promotions/:id
+// • Endpoint 18 - GET /promotion/:id
 
-// • Endpoint 15 - DELETE /promotions/:id
+// • Endpoint 19 - PUT /promotion/:id
+
+// • Endpoint 20 - DELETE /promotion/:id
 
 
 // ! NOT PART OF REQUIREMENT
+// • Endpoint 21 - GET /flight (Gets all flights)
 app.get('/flight', (req, res) => {
     Flight.getAllFlights((err, result) => {
         if (err) {
