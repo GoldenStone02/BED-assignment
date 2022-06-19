@@ -7,6 +7,7 @@
 // Import Libraries
 const express = require('express');
 const bodyParser = require('body-parser');
+const fileUpload = require('express-fileupload')
 const urlEncodedParser = bodyParser.urlencoded({ extended: false });
 const app = express(); // create an instance of express
 
@@ -17,9 +18,11 @@ const Flight = require('../models/flight');
 const Booking = require('../models/booking');
 const Transfer = require('../models/transfer');
 const Promotion = require('../models/promotion');
+const Image = require('../models/image')
 
 // Middleware
-app.use(urlEncodedParser)   // attachs body-parser middleware
+app.use(fileUpload())         // attachs file-upload middleware
+app.use(urlEncodedParser)     // attachs body-parser middleware
 app.use(bodyParser.json())    // parse json
 
 // ! Create middleware that ensures the keys are entered in correctly
@@ -39,18 +42,22 @@ app.use(bodyParser.json())    // parse json
     • Endpoint 11 - GET /transfer/flight/:originAirportId/:destinationAirportId
 # 2 Bonus APIs
     * 1st Bonus API - Image uploading and storage
-    • Endpoint 12 - POST /users/:id/profile
-    • Endpoint 13 - GET /users/:id/profile
-    • Endpoint 14 - PUT /users/:id/profile
-    • Endpoint 15 - DELETE /users/:id/profile
+    // • Endpoint 12 - POST /users/:id/profile
+    // • Endpoint 13 - GET /users/:id/profile
+    // • Endpoint 14 - PUT /users/:id/profile
+    // • Endpoint 15 - DELETE /users/:id/profile
 
     * 2nd Bonus API - Promotion
+    ! Need to figure out proper APIs for promotion
     • Endpoint 16 - POST /promotion
     • Endpoint 17 - GET /promotion/
-    • Endpoint 18 - GET /promotion/:id
+    • Endpoint 18 - GET /promotion/:flightid
     • Endpoint 19 - PUT /promotion/:id
-    • Endpoint 20 - DELETE /promotion/:id
+    • Endpoint 20 - DELETE /promotion/:flightid
 
+    * User Reviews for Airports
+
+    * Addtional Quality of Life APIs
     • Endpoint 21 - GET /flight (Gets all flights)
 */
 
@@ -62,6 +69,15 @@ app.post('/users', (req, res) => {
     var password = req.body.password;
     var role = req.body.role;
     var profile_pic_url = req.body.profile_pic_url;
+
+    if (req.files != null) {
+        var profile_pic_url = req.files.profile_pic_url
+        // Check if the file is an image
+        if (req.files != null) {
+            console.log("Invalid Image File")
+            res.status(500).send("500 Internal Server Error")
+        }
+    }
 
     User.insertUser(username, email, contact, password, role, profile_pic_url, (err, result) => {
         if (err) {
@@ -234,7 +250,6 @@ app.delete('/flight/:id', (req, res) => {
 })
 
 // • Endpoint 11 - GET /transfer/flight/:originAirportID/:destinationAirportID
-// ! WORK IN PROGRESS
 app.get('/transfer/flight/:originAirportID/:destinationAirportID', (req, res) => {
     var originAirportID = req.params.originAirportID;
     var destinationAirportID = req.params.destinationAirportID;
@@ -255,27 +270,16 @@ app.get('/transfer/flight/:originAirportID/:destinationAirportID', (req, res) =>
 // # Image uploading and storage
 // # Used express file upload
 
-// • Endpoint 12 - POST /users/:id/profile
-app.post('/users/:id/profile', (req, res) => {
-    
-})
-// • Endpoint 13 - GET /users/:id/profile
-
-// • Endpoint 14 - PUT /users/:id/profile
-
-// • Endpoint 15 - DELETE /users/:id/profile
-
-
 // # Promotion API
 
-// • Endpoint 16 - POST /promotion
+// • Endpoint 12 - POST /promotion
 app.post('/promotion', (req, res) => {
     var flight_id = req.body.flight_id
     var start_date = req.body.start_date
     var end_date = req.body.end_date
     var discount = req.body.discount
 
-    Promotion.insertPromotion((err, result) => {
+    Promotion.insertPromotion(flight_id, start_date, end_date, discount, (err, result) => {
         if (err) {
             res.status(500).send("500 Internal Server Error");
             return;
@@ -284,13 +288,43 @@ app.post('/promotion', (req, res) => {
     })
 })
 
-// • Endpoint 17 - GET /promotion/
+// • Endpoint 13 - GET /promotion/
+app.get('/promotion', (req, res) => {
+    Promotion.getAllPromotions((err, result) => {
+        if (err) {
+            res.status(500).send("500 Internal Server Error");
+            return;
+        }
+        res.status(200).send(result);
+    })
+})
 
-// • Endpoint 18 - GET /promotion/:id
+// • Endpoint 14 - GET /promotion/:id
+app.get('/promotion/:id', (req, res) => {
+    
+})
 
-// • Endpoint 19 - PUT /promotion/:id
+// • Endpoint 15 - GET /promotion/:flightid
+app.get('/promotion/:id', (req, res) => {
 
-// • Endpoint 20 - DELETE /promotion/:id
+})
+
+// • Endpoint 16 - PUT /promotion/:id
+app.put('/promotion/:id', (req, res) => {
+
+})
+
+// • Endpoint 17 - DELETE /promotion/:id
+// Delete from promotions & flight_promotions
+app.delete('promotion/:id', (req, res) => {
+
+})
+
+// • Endpoint 18 - DELETE /promotion/:id/:flightid
+// Delete flight from flight_promotions
+app.delete('promotion/:id', (req, res) => {
+
+})
 
 
 // ! NOT PART OF REQUIREMENT
