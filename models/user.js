@@ -60,6 +60,14 @@ const userDB = {
     // .. PUT a user by userid
     updateUser: (user_id, username, email, contact, password, role, profile_pic_url, callback) => {
         console.log("Connected! Updating a user...")
+
+        // ! Ensure that customer can't be an Admin
+        // Ensure that only admin user_id can bypass this check to change roles
+        // user_id = 1 is the admin user
+        if (user_id != 1 && role == "Admin") {
+            console.log("Invalid role");
+            return callback("Invalid role", null)
+        }
         var sql = "UPDATE user SET username = ?, email = ?, contact = ?, password = ?, role = ?, profile_pic_url = ? WHERE user_id = ?";
         var params = [username, email, contact, password, role, profile_pic_url, user_id];
         pool.query(sql, params, (err, result) => {

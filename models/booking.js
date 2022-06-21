@@ -8,7 +8,7 @@ const pool = require('../models/databaseConfig')
 
 const bookingDB = {
     // .. POST a new booking
-    insertBooking: function(user_id, flight_id, name, passport, nationality, age, callback) {
+    insertBooking: function (user_id, flight_id, name, passport, nationality, age, callback) {
         console.log("Connected! Inserting a new booking...");
         var params = [user_id, flight_id, name, passport, nationality, age];
         var sql = `

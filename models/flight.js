@@ -34,7 +34,8 @@ const flightDB = {
         var sql = `
         SELECT f.flight_id, f.flightCode, f.aircraft, a1.name as originAirport, a2.name as destinationAirport, f.embarkDate, f.travelTime, f.price 
         FROM flight as f, airport as a1, airport as a2 
-        WHERE f.originAirport = a1.airport_id AND f.destinationAirport = a2.airport_id`;
+        WHERE f.originAirport = a1.airport_id AND f.destinationAirport = a2.airport_id
+        ORDER BY f.flight_id ASC`;
         // .. Get all flights
         pool.query(sql, (err, result) => {
             if (err) {
