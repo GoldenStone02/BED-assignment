@@ -4,8 +4,8 @@ CREATE DATABASE sp_air;
 use sp_air;
 
 CREATE TABLE user (
-	  user_id INT NOT NULL AUTO_INCREMENT,
-    username varchar(100) NOT NULL UNIQUE,
+	user_id INT NOT NULL AUTO_INCREMENT,
+    username VARCHAR(100) NOT NULL UNIQUE,
     email VARCHAR(100) NOT NULL UNIQUE,
     contact VARCHAR(8) NOT NULL,
     password VARCHAR(45) NOT NULL,
@@ -16,7 +16,7 @@ CREATE TABLE user (
 );
 
 CREATE TABLE airport (
-	  airport_id INT NOT NULL AUTO_INCREMENT,
+	airport_id INT NOT NULL AUTO_INCREMENT,
     name VARCHAR(45) NOT NULL,
     country VARCHAR(45) NOT NULL,
     description VARCHAR(255) NOT NULL
@@ -29,7 +29,7 @@ CREATE TABLE flight (
     aircraft VARCHAR(45) NOT NULL,
     originAirport INT NOT NULL,
     destinationAirport INT NOT NULL,
-    embarkDate VARCHAR(45) NOT NULL,
+    embarkDate DATETIME NOT NULL,
     travelTime VARCHAR(45) NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
@@ -55,9 +55,8 @@ CREATE TABLE booking (
 -- .. Bonus Features to be added
 CREATE TABLE promotion (
     promotion_id INT NOT NULL AUTO_INCREMENT,
-    flight_id INT NOT NULL,
-    promotion_start_date VARCHAR(45) NOT NULL,
-    promotion_end_date VARCHAR(45) NOT NULL,
+    promotion_start_date DATETIME NOT NULL,
+    promotion_end_date DATETIME NOT NULL,
     discount_percent INT NOT NULL,
     PRIMARY KEY (promotion_id),
     FOREIGN KEY (flight_id) REFERENCES flight(flight_id) ON DELETE CASCADE ON UPDATE CASCADE
