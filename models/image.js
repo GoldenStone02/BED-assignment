@@ -6,7 +6,7 @@
 
 const path = require('path')
 const fileTypes = [["JFIF", "jpg"], ["PNG", "png"]]
-const maxFileSize = 10000000
+const maxFileSize = 1000000
 
 const imageCheck = {
     checkFileSize: (file) => {
@@ -31,7 +31,7 @@ const imageCheck = {
         var fileType = imageCheck.checkFileFormat(file)
         console.log(fileType)
         if (fileType && imageCheck.checkFileSize(file)) {
-            var fileLocation = path.join('./images/' + file.name)
+            var fileLocation = path.join('./img/' + file.name)
             var fileNameArr = fileLocation.split(".")
             if (fileNameArr[fileNameArr.length - 1] == fileType) {
                 fileNameArr.pop()
@@ -44,6 +44,8 @@ const imageCheck = {
             file.mv(fileLocation)
             return fileLocation.replace("\\", "/")
         }
+        // returns nothing as the file is not valid
+        return ""
     }
 }
 
