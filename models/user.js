@@ -76,7 +76,6 @@ const userDB = {
             return callback("Invalid role", null)
         }
 
-
         var sql = `SELECT * FROM user WHERE user_id = ?`;
         pool.query(sql, [user_id], (err, result) => {
             if (err) {
@@ -88,7 +87,7 @@ const userDB = {
                 console.log("User not found")
                 return callback("User not found", null)
             }
-            var sql = `UPDATE user SET username = ?, email = ?, contact = ?, password = ?, role = ?, profile_pic_url = ? WHERE user_id = ?;`
+            var sql = `UPD ATE user SET username = ?, email = ?, contact = ?, password = ?, role = ?, profile_pic_url = ? WHERE user_id = ?;`
             var params = [username, email, contact, password, role, profile_pic_url, user_id];
             pool.query(sql, params, (err, result) => {
                 if (err) {
