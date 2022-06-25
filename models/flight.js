@@ -22,7 +22,7 @@ const flightDB = {
             // result[0] is the affected rows
             console.log(`${result[0].affectedRows} row has been affected`);
             console.log(`flight id: ${result[1][0].flight_id}`)     // prints flight id
-            console.table(result[1])                // prints result[1], which is the last inserted flight
+            console.table(result[1])                    // prints result[1], which is the last inserted flight
             return callback(null, result[1][0].flight_id);
         })
     },
@@ -41,6 +41,10 @@ const flightDB = {
             if (err) {
                 console.log(err);
                 return callback(err, null);
+            }
+            if (result.length == 0) {
+                console.log("No flight in database")
+                return callback("No flights", null)
             }
             console.table(result)
             return callback(null, result);
@@ -61,8 +65,13 @@ const flightDB = {
                 console.log(err)
                 return callback(err, null)
             }
-            console.table(result[1])
-            return callback(null, result[1])
+            if (result.length == 0) {
+                console.log("No flights found")
+                return callback("No flights found")
+            }
+
+            console.table(result)
+            return callback(null, result)
         })
     },
     // .. DELETE flights and its associated bookings
