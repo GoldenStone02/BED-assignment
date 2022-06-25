@@ -31,6 +31,12 @@ const airportDB = {
                 console.log(err)
                 return callback(err, null)
             }
+
+            if (result.length == 0) {
+                console.log("No airports in database")
+                return callback("No airports", null)
+            }
+            
             console.table(result)
             return callback(null, result)
         })
