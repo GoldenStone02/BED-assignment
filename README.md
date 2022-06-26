@@ -50,7 +50,8 @@ BED Project/
 │   ├── databaseConfig.js
 │   ├── flight.js
 │   ├── image.js                # Image Checker
-│   ├── promotion.js            # Advanced Feature
+│   ├── promotion.js            # Bonus Requirement
+│   ├── review.js               # Advanced Feature
 │   ├── transfer.js
 │   └── user.js
 ├── node_modules/
