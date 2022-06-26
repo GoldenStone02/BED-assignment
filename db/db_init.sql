@@ -76,18 +76,18 @@ CREATE TABLE flight_promotion (
 );
 
 -- ! Might use this for a later feature
--- -- # Review Flights
--- CREATE TABLE review (
---     review_id INT NOT NULL AUTO_INCREMENT,
---     user_id INT NOT NULL,
---     flight_id INT NOT NULL,
---     rating INT NOT NULL,
---     review_text VARCHAR(255) NOT NULL,
---     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
---     PRIMARY KEY (review_id),
---     FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE ON UPDATE CASCADE,
---     FOREIGN KEY (flight_id) REFERENCES flight(flight_id) ON DELETE CASCADE ON UPDATE CASCADE
--- );
+-- # Review Flights
+CREATE TABLE review (
+    review_id INT NOT NULL AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    flight_id INT NOT NULL,
+    rating INT NOT NULL,
+    review_text VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (review_id),
+    FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE NO ACTION ON UPDATE CASCADE,
+    FOREIGN KEY (flight_id) REFERENCES flight(flight_id) ON DELETE NO ACTION ON UPDATE CASCADE
+);
 
 -- -- ! Not used currently
 -- -- # Used for storing of airport logos
@@ -105,6 +105,8 @@ INSERT INTO user (username, email, contact, password, role, profile_pic_url)
 VALUES ('admin', 'admin@sp_air.com', '12345678', 'password123', 'Admin', './img/default.png');
 INSERT INTO user (username, email, contact, password, role, profile_pic_url)
 VALUES ('user', 'user@sp_air.com', '12345678', 'password123', 'Customer', './img/default.png');
+INSERT INTO user (username, email, contact, password, role, profile_pic_url)
+VALUES ('UltraRaptor', 'ultraraptor@sp_air.com', '12345678', 'password123', 'Customer', './img/default.png');
 
 -- # Add airports
 INSERT INTO airport (name, country, description) VALUES ('Changi Airport', 'Singapore', 'Main International Airport of Singapore');
@@ -150,4 +152,5 @@ INSERT INTO flight_promotion (flight_id, promotion_id) VALUES (1, 1);
 INSERT INTO flight_promotion (flight_id, promotion_id) VALUES (2, 1);
 
 -- # Add reviews
--- INSERT INTO review (user_id, flight_id, rating, review_text) VALUES (2, 1, 5, "This is a great flight");
+INSERT INTO review (user_id, flight_id, rating, review_text) VALUES (2, 1, 5, "This is a great flight");
+INSERT INTO review (user_id, flight_id, rating, review_text) VALUES (3, 1, 5, "It was amazing!");

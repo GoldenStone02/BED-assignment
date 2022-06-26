@@ -19,6 +19,7 @@ const Booking = require('../models/booking');
 const Transfer = require('../models/transfer');
 const Promotion = require('../models/promotion');
 const Image = require('../models/image')
+const Review = require('../models/review')
 
 // Middleware
 app.use(fileUpload())         // attachs file-upload middleware
@@ -42,23 +43,23 @@ app.use(bodyParser.json())    // parse json
     • Endpoint 11 - GET /transfer/flight/:originAirportId/:destinationAirportId
 # 2 Bonus APIs
     * 1st Bonus API - Image uploading and storage
-    // • Endpoint 12 - POST /users/:id/profile
-    // • Endpoint 13 - GET /users/:id/profile
-    // • Endpoint 14 - PUT /users/:id/profile
-    // • Endpoint 15 - DELETE /users/:id/profile
+    # It has been integrated into Endpoint 1 - POST /users and Endpoint 4 - PUT /users/:id
 
     * 2nd Bonus API - Promotion
     ! Need to figure out proper APIs for promotion
-    • Endpoint 16 - POST /promotion
-    • Endpoint 17 - GET /promotion/
-    • Endpoint 18 - GET /promotion/:flightid
-    • Endpoint 19 - PUT /promotion/:id
-    • Endpoint 20 - DELETE /promotion/:flightid
+    • Endpoint 12 - POST /promotion
+    • Endpoint 13 - GET /promotion/
+    • Endpoint 14 - DELETE /promotion/:id
+    • Endpoint 15 - GET /promotion/flight/:flightid
+    • Endpoint 16 - POST /promotion/:promotionid/flight/:flightid
+    • Endpoint 17 - DELETE /promotion/flight/:flightid
 
-    * User Reviews for Airports
+    * User Reviews for Flights??
+    • Endpoint 18 - POST /review/:flightid/:userid
+    • Endpoint 19 - GET /review/:flightid
 
     * Addtional Quality of Life APIs
-    • Endpoint 21 - GET /flight (Gets all flights)
+    • Endpoint 20 - GET /flight (Gets all flights)
 */
 
 // • Endpoint 1 - POST /users/
@@ -68,18 +69,25 @@ app.post('/users', (req, res) => {
     var contact = req.body.contact;
     var password = req.body.password;
     var role = req.body.role;
-    var profile_pic_url = req.body.profile_pic_url;
+    var profile_picture = "";
 
-    if (req.files != null) {
-        var profile_pic_url = req.files.profile_pic_url
+    if (req.files != null || req.files != undefined) {
+        // Get image from profile_pic_url
+        var profile_pic_url = req.files.profile_pic_url;
+        profile_picture = Image.checkFile(profile_pic_url, username)
         // Check if the file is an image
-        if (req.files != null) {
+        if (profile_picture == "") {
             console.log("Invalid Image File")
-            res.status(500).send("500 Internal Server Error")
+            res.status(400).send("400 Bad Request")
+            return
         }
     }
 
-    User.insertUser(username, email, contact, password, role, profile_pic_url, (err, result) => {
+    if (profile_picture == "") {
+        profile_picture = "./img/default.png"
+    }
+
+    User.insertUser(username, email, contact, password, role, profile_picture, (err, result) => {
         if (err) {
             // Checks for Duplicate Entry
             if (err.code == "ER_DUP_ENTRY") {
@@ -89,8 +97,7 @@ app.post('/users', (req, res) => {
             res.status(500).send("500 Internal Server Error");
         }
         else {
-            console.log(result)
-            res.status(201).send(`${result} user added`);
+            res.status(201).send({"userid": result});
         };
     });
 })
@@ -99,6 +106,10 @@ app.post('/users', (req, res) => {
 app.get('/users', (req, res) => {
     User.getAllUsers((err, result) => {
         if (err) {
+            if (err == "No users") {
+                res.status(200).send({'Message':"No registered users"})
+                return
+            }
             res.status(500).send("500 Internal Server Error");
             return;
         }
@@ -113,7 +124,7 @@ app.get('/users/:id', (req, res) => {
         if (err) {
             // Checks if user is in the database
             if (err == "User not found") {
-                res.status(404).send("404 Not Found");
+                res.status(404).send({"Message": "User not in database"});
                 return;
             }
             res.status(500).send("500 Internal Server Error");
@@ -131,11 +142,31 @@ app.put('/users/:id', (req, res) => {
     var contact = req.body.contact;
     var password = req.body.password;
     var role = req.body.role;       // # [NOTE] Customer shouldn't be able to change to admin
-    var profile_pic_url = req.body.profile_pic_url;
+    var profile_picture = "";
 
-    User.updateUser(user_id, username, email, contact, password, role, profile_pic_url, (err, result) => {
+    if (req.files != null || req.files != undefined) {
+        // Get image from profile_pic_url
+        var profile_pic_url = req.files.profile_pic_url;
+        profile_picture = Image.checkFile(profile_pic_url, username)
+        // Check if the file is an image
+        if (profile_picture == "") {
+            console.log("Invalid Image File")
+            res.status(400).send("400 Bad Request")
+            return
+        }
+    }
+
+    if (profile_picture == "") {
+        profile_picture = "./img/default.png"
+    }
+
+    User.updateUser(user_id, username, email, contact, password, role, profile_picture, (err, result) => {
         if (err) {
-            if (err.code == "ER_DUP_ENTRY") {
+            if (err == "User not found") {
+                res.status(404).send({"Message": "User not in database"});
+                return;
+            }
+            if (err.code == "ER_DUP_ENTRY" || err == "Invalid role") {
                 res.status(422).send("422 Unprocessable Entity");
                 return;
             }
@@ -172,6 +203,10 @@ app.post('/airport', (req, res) => {
 app.get('/airport', (req, res) => {
     Airport.getAllAirports((err, result) => {
         if (err) {
+            if (err == "No airports") {
+                res.status(200).send({"Message": "No airport in database"})
+                return
+            }
             res.status(500).send("500 Internal Server Error");
             return;
         }
@@ -191,11 +226,6 @@ app.post('/flight', (req, res) => {
 
     Flight.insertFlight(flightCode, aircraft, originAirportID, destinationAirportID, embarkDate, travelTime, price, (err, result) => {
         if (err) {
-            // Checks for Duplicate Entry
-            if (err.code == "ER_DUP_ENTRY") {
-                res.status(422).send("422 Unprocessable Entity");
-                return;
-            }
             res.status(500).send("500 Internal Server Error");
             return;
         }
@@ -210,6 +240,10 @@ app.get('/flightDirect/:originAirportID/:destinationAirportID', (req, res) => {
 
     Flight.getFlightDirect(originAirportID, destinationAirportID, (err, result) => {
         if (err) {
+            if (err == "No flights found") {
+                res.status(404).send({"Message":"No flights for given flight directions"})
+                return
+            }
             res.status(500).send("500 Internal Server Error");
             return;
         }
@@ -218,7 +252,7 @@ app.get('/flightDirect/:originAirportID/:destinationAirportID', (req, res) => {
 })
 
 // • Endpoint 9 - POST /booking/:userid/:flightid
-app.get('/booking/:userid/:flightid', (req, res) => {
+app.post('/booking/:userid/:flightid', (req, res) => {
     var user_id = req.params.userid
     var flight_id = req.params.flightid
     var name = req.body.name
@@ -264,9 +298,6 @@ app.get('/transfer/flight/:originAirportID/:destinationAirportID', (req, res) =>
 })
 
 // 2 Bonus APIs
-// ! EVERYTHING BELOW IS WORK IN PROGRESS
-// ! DO NOT USE YET
-
 // # Image uploading and storage
 // # Used express file upload
 
@@ -274,13 +305,24 @@ app.get('/transfer/flight/:originAirportID/:destinationAirportID', (req, res) =>
 
 // • Endpoint 12 - POST /promotion
 app.post('/promotion', (req, res) => {
-    var flight_id = req.body.flight_id
+    var promo_name = req.body.promo_name
+    var promo_description = req.body.promo_description
     var start_date = req.body.start_date
     var end_date = req.body.end_date
     var discount = req.body.discount
 
-    Promotion.insertPromotion(flight_id, start_date, end_date, discount, (err, result) => {
+    Promotion.insertPromotion(promo_name, promo_description, start_date, end_date, discount, (err, result) => {
         if (err) {
+
+            if (err == "Promotion already exists") {
+                res.status(422).send({"Message": "Promotion already exists"})
+                return;
+            }
+
+            if (err == "Invalid Date") {
+                res.status(400).send({"Message": "Invalid Date"});
+                return;
+            }
             res.status(500).send("500 Internal Server Error");
             return;
         }
@@ -299,39 +341,116 @@ app.get('/promotion', (req, res) => {
     })
 })
 
-// • Endpoint 14 - GET /promotion/:id
-app.get('/promotion/:id', (req, res) => {
-    
-})
-
-// • Endpoint 15 - GET /promotion/:flightid
-app.get('/promotion/:id', (req, res) => {
-
-})
-
-// • Endpoint 16 - PUT /promotion/:id
-app.put('/promotion/:id', (req, res) => {
-
-})
-
-// • Endpoint 17 - DELETE /promotion/:id
+// • Endpoint 14 - DELETE /promotion/:id
 // Delete from promotions & flight_promotions
-app.delete('promotion/:id', (req, res) => {
+app.delete('/promotion/:id', (req, res) => {
+    var promotion_id = req.params.id;
 
+    Promotion.deletePromotion(promotion_id, (err, result) => {
+        if (err) {
+            res.status(500).send("500 Internal Server Error");
+            return;
+        }
+        res.status(200).send({"Message": "Deletion successful"});
+    })
 })
 
-// • Endpoint 18 - DELETE /promotion/:id/:flightid
+// • Endpoint 15 - GET /promotion/flight/:flightid
+// Get promotion by flight id
+app.get('/promotion/flight/:flightid', (req, res) => {
+    var flight_id = req.params.flightid;
+
+    Promotion.getPromotionByFlightID(flight_id, (err, result) => {
+        if (err) {
+            res.status(500).send("500 Internal Server Error");
+            return;
+        }
+        res.status(200).send(result);
+    })
+})
+
+// • Endpoint 16 - POST /promotion/:promotionid/flight/:flightid
+app.post('/promotion/:promotionid/flight/:flightid', (req, res) => {
+    var flight_id = req.params.flightid;
+    var promotion_id = req.params.promotionid;
+
+    Promotion.insertPromotionByFlightID(flight_id, promotion_id, (err, result) => {
+        if (err) {
+            if (err == "Flight not in promotion period") {
+                res.status(400).send({"Message": "Flight not in promotion period"})
+                return;
+            }
+            if (err.code == "ER_DUP_ENTRY") {
+                res.status(422).send({"Message": "Flight already in promotion"})
+                return;
+            }
+
+            res.status(500).send("500 Internal Server Error");
+            return;
+        }
+        res.status(201).send({"Message": "Promotion added to flight"});
+    })
+})
+
+// • Endpoint 17 - DELETE /promotion/flight/:flightid
 // Delete flight from flight_promotions
-app.delete('promotion/:id', (req, res) => {
+app.delete('/promotion/flight/:flightid', (req, res) => {
+    var flight_id = req.params.flightid;
 
+    Promotion.deleteFlightPromotion(flight_id, (err, result) => {
+        if (err) {
+            res.status(500).send("500 Internal Server Error");
+            return;
+        }
+        res.status(200).send({"Message": "Deletion successful"});
+    })
 })
 
+// # Review API
+
+// • Endpoint 18 - POST /review/:flightid/:userid
+app.post('/review/:flightid/:userid', (req, res) => {
+    var flight_id = req.params.flightid;
+    var user_id = req.params.userid;
+    var rating = req.body.rating;
+    var review = req.body.review;
+
+    Review.insertReview(flight_id, user_id, rating, review, (err, result) => {
+        if (err) {
+            res.status(500).send("500 Internal Server Error");
+            return;
+        }
+        res.status(201).send({"review_id": result});
+    })
+})
+
+// • Endpoint 19 - GET /review/:flightid
+app.get('/review/:flightid', (req, res) => {
+    var flight_id = req.params.flightid;
+
+    Review.getReviewsForFlight(flight_id, (err, result) => {
+        if (err) {
+
+            if (err == "No reviews") {
+                res.status(404).send({"Message": "No reviews for this flight"})
+                return;
+            }
+            res.status(500).send("500 Internal Server Error");
+            return;
+        }
+        res.status(200).send(result);
+    })
+})
 
 // ! NOT PART OF REQUIREMENT
-// • Endpoint 21 - GET /flight (Gets all flights)
+// • Endpoint 20 - GET /flight (Gets all flights)
 app.get('/flight', (req, res) => {
     Flight.getAllFlights((err, result) => {
         if (err) {
+            if (err == "No flights") {
+                res.status(200).send({"Message": "No flights in database"})
+                return
+            }
             res.status(500).send("500 Internal Server Error");
             return;
         }

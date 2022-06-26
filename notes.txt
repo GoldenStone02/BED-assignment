@@ -1,8 +1,18 @@
+=====================
+|       NOTICE      |
+=====================
+This is for GENERAL NOTE TAKING during the completion of the assignment.
+
+If you wish to get a step-by-step for installation or a general overview,
+please refer to the README.md within this folder
+
+
 # Items to do
-.. Create the database first
-.. Ensure that the tables are linked properly
-.. Create the APIs to retrieve the data via POSTMAN
-.. be happy
+.. [x] Create the database first
+.. [ ] Ensure that the tables are linked properly
+.. [ ] Create the APIs to retrieve the data via POSTMAN
+// .. [ ] Change the travelTime to be accurate if incorrect data is put in.
+.. [ ] Could add a filter button
 
 > Requirements
 .. Create a MYSQL database with necessary tables
@@ -24,8 +34,49 @@
 .. Proper Documentation (10%)
 
 > Components
-11 APIs
-2 Bonus APIS
+
+Endpoints References
+# 11 APIs
+    • Endpoint 1 - POST /users
+    • Endpoint 2 - GET /users
+    • Endpoint 3 - GET /users/:id
+    • Endpoint 4 - PUT /users/:id
+    • Endpoint 5 - POST /airport
+    • Endpoint 6 - GET /airport
+    • Endpoint 7 - POST /flight
+    • Endpoint 8 - GET /flightDirect/:originAirportId/:destinationAirportId
+    • Endpoint 9 - POST /booking/:userid/:flightid
+    • Endpoint 10 - DELETE /flight/:id
+    • Endpoint 11 - GET /transfer/flight/:originAirportId/:destinationAirportId
+# 2 Bonus APIs
+    * 1st Bonus API - Image uploading and storage
+    # It has been integrated into Endpoint 1 - POST /users and Endpoint 4 - PUT /users/:id
+
+    * 2nd Bonus API - Promotion
+    ! Need to figure out proper APIs for promotion
+    • Endpoint 12 - POST /promotion
+    • Endpoint 13 - GET /promotion/
+    • Endpoint 15 - DELETE /promotion/:id
+    • Endpoint 16 - GET /promotion/flight/:flightid
+    • Endpoint 17 - POST /promotion/:promotionid/flight/:flightid
+    • Endpoint 18 - DELETE /promotion/flight/:flightid
+
+
+    * User Reviews for Flights??
+
+
+    * Addtional Quality of Life APIs
+    • Endpoint 19 - GET /flight (Gets all flights)
+
+# 11 APIs
+
+? Endpoint 11: How do you select which transfer flight to take if there are mutliple flights of the same route?
+? E.g. There are 2 flights going from Airport 1 to Airport 2, which one of those flight do I select?
+.. Distance function? Cost? Airline?
+.. Could use a transfer table
+    ! Still would need to select a flight.
+
+# 2 Bonus APIs
 
 * 1st Bonus
 • Create endpoint for image uploading/storage and retrieval of product listing from the server. 
@@ -42,9 +93,14 @@
 • that a flight can have multiple promotional periods.
 ? This endpoint requires GET, POST and DELETE
 
-# Extra Features
+# Extra Possible Features?
 .. Async programming
 .. Uploading & Storage of images
+    • Use express-file-upload.
+.. Adding a Distance function
+    • This can be used to select the transfer flight with the shortest Distance
+    • Could also factor in if a transfer flight has an offer
+.. Add a price and embarkDate filter function
 
 # Documentation
 
@@ -64,7 +120,27 @@
         * transfer.js
         * user.js
     • node_modules/
+    * notes.txt
     * package-lock.json
     * package.json
     * server.js
-    * README.txt
+    * README.md
+
+
+> Some Useful Resources
+
+# Leonard's resources for adding images to database
+! Could be used if I were to create a new file
+# https://javascript.plainenglish.io/upload-images-in-your-node-app-e05d0423fd4a 
+# http://expressjs.com/en/resources/middleware/multer.html
+# https://www.digitalocean.com/community/tutorials/how-to-add-advanced-photo-uploads-in-node-and-express 
+# https://stackoverflow.com/questions/34697502/how-to-limit-the-file-size-when-uploading-with-multer 
+# https://stackoverflow.com/questions/38652848/filter-files-on-the-basis-of-extension-using-multer-in-express-js/38692588#38692588 
+
+# Resources used:
+# https://stackoverflow.com/questions/35175136/extract-time-from-a-string-in-javascript 
+# https://simplernerd.com/js-add-hours-date/
+# https://www.npmjs.com/package/express-fileupload
+# https://www.w3schools.com/js/js_array_sort.asp
+
+# AXIOS REFERENCES
