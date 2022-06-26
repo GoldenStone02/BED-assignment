@@ -23,7 +23,7 @@ const reviewDB = {
     // .. GET /review/:flightid
     getReviewsForFlight: function (flight_id, callback) {
         var params = [flight_id]
-        var sql = `SE LECT r.review_id, u.user_id, u.username, r.flight_id, r.rating, r.review_text 
+        var sql = `SELECT r.review_id, u.user_id, u.username, r.flight_id, r.rating, r.review_text 
         FROM review as r, user as u 
         WHERE r.flight_id = ? AND r.user_id = u.user_id;`
         pool.query(sql, params, (err, result) => {
