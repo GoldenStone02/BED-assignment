@@ -29,7 +29,7 @@ These are the features that are included in the project.
     - `Endpoint 14 - DELETE /promotion/:id`
     - `Endpoint 15 - GET /promotion/flight/:flightid`
     - `Endpoint 16 - POST /promotion/:promotionid/flight/:flightid`
-    - `Endpoint 17 - DELETE /promotion/flight/:flightid `
+    - `Endpoint 17 - DELETE /promotion/flight/:flightid`
 - Review for flights
     - `Endpoint 18 - POST /review/:flightid/:userid`
     - `Endpoint 19 - GET /review/:flightid`

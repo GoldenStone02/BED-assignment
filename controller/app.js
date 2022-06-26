@@ -54,7 +54,7 @@ app.use(bodyParser.json())    // parse json
     • Endpoint 16 - POST /promotion/:promotionid/flight/:flightid
     • Endpoint 17 - DELETE /promotion/flight/:flightid
 
-    * User Reviews for Flights??
+    * User Reviews for Flights
     • Endpoint 18 - POST /review/:flightid/:userid
     • Endpoint 19 - GET /review/:flightid
 

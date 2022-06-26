@@ -87,7 +87,7 @@ const flightDB = {
             console.log(`${affectedRows} row has been affected`);
             return callback(null, affectedRows)
         })
-    }
+    },
 }
 
 module.exports = flightDB
