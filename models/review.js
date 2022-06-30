@@ -10,7 +10,8 @@ const reviewDB = {
     // .. POST /review/:flightid/:userid
     insertReview: function (flight_id, user_id, rating, review, callback) {
         var params = [flight_id, user_id, rating, review];
-        var sql = `INSERT INT O review (flight_id, user_id, rating, review_text) VALUES (?, ?, ?, ?)`
+        // ! NOTE: There was an error over here. 
+        var sql = `INSERT INTO review (flight_id, user_id, rating, review_text) VALUES (?, ?, ?, ?)`
         pool.query(sql, params, (err, result) => {
             if (err) {
                 console.log(err);

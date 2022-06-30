@@ -8,8 +8,6 @@ const pool = require('../models/databaseConfig')
 
 const transferDB = {
     // .. GET all transfer flights
-    // ! WORK IN PROGRESS
-    // ! This function is not working properly
     getTransferFlights: function (origin_airport_id, destination_airport_id, callback) {
         console.log("Connected! Getting transfer flights...");
         var params = [origin_airport_id, destination_airport_id, destination_airport_id, origin_airport_id];

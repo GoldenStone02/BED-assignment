@@ -4,7 +4,7 @@
     Class: DISM/FT/2B/21
 */
 
-const { param } = require('../controller/app');
+
 const pool = require('../models/databaseConfig')
 
 const promotionDB = {
@@ -52,7 +52,7 @@ const promotionDB = {
         console.log("Connected! Deleting promotion...");
         var params = [promotion_id, promotion_id]
         var sql = `
-        DELET E FROM promotion where promotion_id = ?;
+        DELETE FROM promotion where promotion_id = ?;
         DELETE FROM flight_promotion where promotion_id = ?;`;
         pool.query(sql, params, (err, result) => {
             if (err) {
