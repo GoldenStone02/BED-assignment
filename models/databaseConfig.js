@@ -5,17 +5,19 @@
 */
 
 var mysql = require('mysql');
+require("dotenv").config();
 
 // • Creates a pool connection instead of creating a new connection for each request.
 var pool = mysql.createPool({
     connectionLimit: 10,
     host: 'localhost',
-    user: 'root',
-    password: '1qwer$#@!',
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
     database: 'sp_air',
     dateStrings: true,          // .. Allows date to be returned as a string
     multipleStatements: true    // .. Allows for multiline querying
 })
+
 
 pool.getConnection((err, connection) => {
     if (err) {

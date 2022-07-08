@@ -5,7 +5,8 @@
 */
 
 const app = require('./controller/app');
-const PORT = 8080
+require('dotenv').config();
+const PORT = process.env.PORT
 
 const server = app.listen(PORT, () => {
     console.log('Web App Hosted at http://localhost:%s',PORT);
