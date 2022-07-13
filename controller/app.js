@@ -19,7 +19,8 @@ const Booking = require('../models/booking');
 const Transfer = require('../models/transfer');
 const Promotion = require('../models/promotion');
 const Image = require('../models/image')
-const Review = require('../models/review')
+const Review = require('../models/review');
+const verifyToken = require('../auth/verifyToken');
 
 // Middleware
 app.use(fileUpload())         // attachs file-upload middleware
