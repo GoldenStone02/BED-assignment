@@ -1,90 +1,53 @@
-body {
-	background: #ebebeb;
-	font-family: "Open Sans", sans-serif;
-}
+/* Carousel CSS */
 .carousel {
-	margin: 30px auto 60px;
-	padding: 0 80px;
+	margin: 30px 0;
+    background: #ccc;
 }
 .carousel .carousel-item {
-	text-align: center;
+    text-align: center;
 	overflow: hidden;
-}
-.carousel .carousel-item h4 {
-	font-family: 'Varela Round', sans-serif;
+    height: 475px;
 }
 .carousel .carousel-item img {
 	max-width: 100%;
+    margin: 0 auto; /* Align slide image horizontally center in Bootstrap v3 */
+}
+.carousel-caption h3, .carousel-caption p {
+	color: #fff;
 	display: inline-block;
-}
-.carousel .carousel-item .btn {
-	border-radius: 0;
-	font-size: 12px;
-	text-transform: uppercase;
-	font-weight: bold;
-	border: none;
-	background: #a177ff;
-	padding: 6px 15px;
-	margin-top: 5px;
-}
-.carousel .carousel-item .btn:hover {
-	background: #8c5bff;
-}
-.carousel .carousel-item .btn i {
-	font-size: 14px;
-	font-weight: bold;
-	margin-left: 5px;
-}
-.carousel .thumb-wrapper {
-	margin: 5px;
-	text-align: left;
-	background: #fff;
-	box-shadow: 0px 2px 2px rgba(0,0,0,0.1);   
-}
-.carousel .thumb-content {
-	padding: 15px;
-	font-size: 13px;
-}
-.carousel-control-prev, .carousel-control-next {
-	height: 44px;
-	width: 44px;
-	background: none;	
-	margin: auto 0;
-	border-radius: 50%;
-	border: 3px solid rgba(0, 0, 0, 0.8);
-}
-.carousel-control-prev i, .carousel-control-next i {
-	font-size: 36px;
-	position: absolute;
-	top: 50%;
-	display: inline-block;
-	margin: -19px 0 0 0;
-	z-index: 5;
-	left: 0;
-	right: 0;
-	color: rgba(0, 0, 0, 0.8);
+	font-family: 'Oswald', sans-serif;
 	text-shadow: none;
-	font-weight: bold;
+	margin-bottom: 20px;
 }
-.carousel-control-prev i {
-	margin-left: -3px;
+.carousel-caption h3 {
+	background: rgba(0,0,0,0.9);
+	padding: 12px 24px;
+	font-size: 40px;	
+	text-transform: uppercase;
 }
-.carousel-control-next i {
-	margin-right: -3px;
+.carousel-caption p {
+	background: #20b0b9;
+	padding: 10px 20px;
+	font-size: 20px;
+	font-weight: 300;
 }
-.carousel-indicators {
-	bottom: -50px;
+.carousel .nav {	
+	background: #eee;
 }
-.carousel-indicators li, .carousel-indicators li.active {
-	width: 10px;
-	height: 10px;
-	border-radius: 50%;
-	margin: 4px;
-	border: none;
+.carousel .nav a {
+	color: #333;
+	border-radius: 0;
+	font-size: 85%;
+	padding: 10px 16px;
+	background: transparent;
 }
-.carousel-indicators li {	
-	background: #ababab;
+.carousel .nav .active a {
+	color: #fff;
+	background: #20b0b9;
 }
-.carousel-indicators li.active {	
-	background: #555;
+.carousel .nav strong {
+	display: block;
+	font-family: 'Roboto', sans-serif;
+	font-size: 110%;
+	text-transform: uppercase;
 }

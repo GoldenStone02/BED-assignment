@@ -4,11 +4,6 @@
     Class: DISM/FT/2B/21
 */
 
-/* 
-    Navbar CSS
-    Taken From 
-    https://www.tutorialrepublic.com/snippets/preview.php?topic=bootstrap&file=navbar-dropdown-login-and-signup-form-with-social-buttons
-*/
 body {
 	font-family: 'Albert Sans', sans-serif;
 }
@@ -42,8 +37,14 @@ body {
 	padding-right: 50px;
 }
 
+.navbar .navbar-brand i {
+	padding-right: 15px;
+	padding-left: 10px;
+}
+
 .navbar .navbar-brand b {
-	color: #33cabb;		
+	/* color: #33cabb;	 */
+	color: #ff160c;
 }
 
 .navbar .form-inline {
@@ -54,6 +55,8 @@ body {
 	color: #888;
 	font-size: 15px;
 }
+
+/* Search Box CSS */
 
 .search-box {
 	position: relative;
@@ -82,6 +85,9 @@ body {
 	font-size: 19px;
 }
 
+/* End of Search Box CSS */
+
+/* Remove after login and sign html are completed */
 .navbar .sign-up-btn {
 	min-width: 110px;
 	max-height: 36px;
@@ -173,6 +179,11 @@ body {
 	top: 2px;
 }
 
+
+/* 
+	Or seperator
+	Might be useful in the future
+*/
 .or-seperator {
 	margin-top: 32px;
 	text-align: center;
@@ -196,6 +207,7 @@ body {
 	z-index: 1;
 }
 
+/* Remove after login and sign html are completed */
 .navbar .action-buttons .dropdown-toggle::after {
 	display: none;
 }
