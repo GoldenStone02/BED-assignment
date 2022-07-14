@@ -9,7 +9,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const fileUpload = require('express-fileupload')
 const urlEncodedParser = bodyParser.urlencoded({ extended: false });
-const app = express(); // create an instance of express
+const path = require('path');
+const app = express(); // Create an instance of express
 
 // Import Modules
 const User = require('../models/user');
@@ -63,6 +64,19 @@ app.use(bodyParser.json())    // parse json
     • Endpoint 20 - GET /flight (Gets all flights)
 */
 
+// Site Routing
+// • GET /
+app.get('/', async (req, res) => {
+    try {
+        res.sendFile(path.resolve("./public/index.html"));
+    } catch (err) {
+        res.sendFile(path.resolve("./public/error.html"));
+    }
+})
+
+
+// End of Site Routing
+
 // • Endpoint 1 - POST /users/
 app.post('/users', (req, res) => {
     var username = req.body.username;
@@ -104,18 +118,23 @@ app.post('/users', (req, res) => {
 })
 
 // • Endpoint 2 - GET /users/
-app.get('/users', (req, res) => {
-    User.getAllUsers((err, result) => {
-        if (err) {
-            if (err == "No users") {
-                res.status(200).send({'Message':"No registered users"})
-                return
+app.get('/users', async (req, res) => {
+    try {
+        await User.getAllUsers((err, result) => {
+            if (err) {
+                if (err == "No users") {
+                    res.status(200).send({'Message':"No registered users"})
+                    return
+                }
+                res.status(500).send("500 Internal Server Error");
+                return;
             }
-            res.status(500).send("500 Internal Server Error");
-            return;
-        }
-        res.status(200).send(result);
-    });
+            res.status(200).send(result);
+        });
+    } catch (e) {
+        // Needs to return error message and html
+        res.status(500).send("500 Internal Server Error");
+    }
 })
 
 // • Endpoint 3 - GET /users/:id
@@ -458,5 +477,6 @@ app.get('/flight', (req, res) => {
         res.status(200).send(result);
     })
 })
+
 
 module.exports = app
