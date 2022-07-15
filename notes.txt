@@ -9,10 +9,14 @@ please refer to the README.md within this folder
 
 # Items to do
 .. [x] Create the database first
-.. [ ] Ensure that the tables are linked properly
-.. [ ] Create the APIs to retrieve the data via POSTMAN
+.. [x] Ensure that the tables are linked properly
+.. [x] Create the APIs to retrieve the data via POSTMAN
 // .. [ ] Change the travelTime to be accurate if incorrect data is put in.
-.. [ ] Could add a filter button
+.. [x] Could add a embarkDate filter button
+.. [x] Add Environmental Variables for DB
+.. [ ] Add in JWT authentication
+.. [ ] Create all the HTML files
+.. [ ] Connect backend to frontend
 
 > Requirements
 .. Create a MYSQL database with necessary tables
@@ -61,9 +65,9 @@ Endpoints References
     • Endpoint 17 - POST /promotion/:promotionid/flight/:flightid
     • Endpoint 18 - DELETE /promotion/flight/:flightid
 
-
-    * User Reviews for Flights??
-
+    * User Reviews for Flights
+    • Endpoint 18 - POST /review/:flightid/:userid
+    • Endpoint 19 - GET /review/:flightid
 
     * Addtional Quality of Life APIs
     • Endpoint 19 - GET /flight (Gets all flights)
@@ -142,5 +146,23 @@ Endpoints References
 # https://simplernerd.com/js-add-hours-date/
 # https://www.npmjs.com/package/express-fileupload
 # https://www.w3schools.com/js/js_array_sort.asp
+
+# Could be used for the swapping of departure and arrival airports.
+# https://stackoverflow.com/questions/63803696/how-to-swap-the-input-from-two-text-fields-in-html-javascript
+
+
+> HTML and CSS Sources
+
+# References
+# https://www.expedia.com/Flights
+
+# Navbar CSS and HTML
+# https://www.tutorialrepublic.com/snippets/preview.php?topic=bootstrap&file=navbar-dropdown-login-and-signup-form-with-social-buttons
+
+# Footer
+# https://library.livecanvas.com/sections?s=footer
+
+# Possible snippets
+https://epicbootstrap.com/snippets
 
 # AXIOS REFERENCES

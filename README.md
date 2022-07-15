@@ -64,6 +64,7 @@ BED Project/
 ```
 
 ## Setting Up
-- Run `db_init.sql` to build the database schema
 - Run `npm i` to install all dependencies in terminal
+- Run `db_init.sql` to build the database schema
+- Update `.env` with your desired hosting port, DB user and password
 - `node server.js` to start the server

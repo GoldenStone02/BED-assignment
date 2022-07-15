@@ -9,6 +9,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const fileUpload = require('express-fileupload')
 const urlEncodedParser = bodyParser.urlencoded({ extended: false });
+const jwt = require('jsonwebtoken');
+const JWT_SECRET = require('../config.js');
 const path = require('path');
 const app = express(); // Create an instance of express
 
@@ -31,6 +33,10 @@ app.use(bodyParser.json())    // parse json
 // ! Create middleware that ensures the keys are entered in correctly
 
 /* Endpoints References
+
+# Site Routing
+    • GET /users
+
 # 11 APIs
     • Endpoint 1 - POST /users
     • Endpoint 2 - GET /users
