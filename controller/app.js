@@ -30,6 +30,10 @@ app.use(fileUpload())         // attachs file-upload middleware
 app.use(urlEncodedParser)     // attachs body-parser middleware
 app.use(bodyParser.json())    // parse json
 
+// Resources: https://expressjs.com/en/starter/static-files.html
+app.use("/img", express.static("img"));
+app.use(express.static(path.resolve("./public")))
+
 // ! Create middleware that ensures the keys are entered in correctly
 
 /* Endpoints References
@@ -78,7 +82,46 @@ app.get('/', async (req, res) => {
     } catch (err) {
         res.sendFile(path.resolve("./public/error.html"));
     }
+});
+
+// • Login
+app.post('/login', (req, res) => {
+    var email = req.body.email
+    var password = req.body.password
+    User.login(email, password, (err, user) => {
+        if (err) {
+            res.status(500).send("500 Internal Server Error")
+            return;
+        }
+        const payload = { user_id: user.user_id };
+        console.log(payload)
+        jwt.sign(
+            payload, 
+            JWT_SECRET, 
+            { algorithm: "HS256" }, 
+            (err, token) => {
+            if (err) {
+                console.log(err);
+                res.status(401).send();
+                return;
+            } 
+            res.status(200).send({
+                token: token,
+                user_id: user.user_id,
+                role: user.role
+            });
+        })
+    })
+});
+
+// • Verify Token
+
+
+// • Profile
+app.get('/profile', verifyToken, (req, res) => {
+    res.sendFile(path.resolve("./public/profile.html"));
 })
+
 
 
 // End of Site Routing
@@ -124,27 +167,22 @@ app.post('/users', (req, res) => {
 })
 
 // • Endpoint 2 - GET /users/
-app.get('/users', async (req, res) => {
-    try {
-        await User.getAllUsers((err, result) => {
-            if (err) {
-                if (err == "No users") {
-                    res.status(200).send({'Message':"No registered users"})
-                    return
-                }
-                res.status(500).send("500 Internal Server Error");
-                return;
+app.get('/users', (req, res) => {
+    User.getAllUsers((err, result) => {
+        if (err) {
+            if (err == "No users") {
+                res.status(200).send({'Message':"No registered users"})
+                return
             }
-            res.status(200).send(result);
-        });
-    } catch (e) {
-        // Needs to return error message and html
-        res.status(500).send("500 Internal Server Error");
-    }
+            res.status(500).send("500 Internal Server Error");
+            return;
+        }
+        res.status(200).send(result);
+    });
 })
 
 // • Endpoint 3 - GET /users/:id
-app.get('/users/:id', (req, res) => {
+app.get('/users/:id', verifyToken, (req, res) => {
     var user_id = req.params.id;
     User.getUser(user_id, (err, result) => {
         if (err) {
