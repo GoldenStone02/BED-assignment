@@ -1,3 +1,9 @@
+/*
+    Name: Ng Jun Han
+    Admin: 2008493
+    Class: DISM/FT/2B/21
+*/
+
 $(document).ready(() => {
 
     // Check if there is a new user that signed up

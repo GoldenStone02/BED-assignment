@@ -1,3 +1,9 @@
+/*
+    Name: Ng Jun Han
+    Admin: 2008493
+    Class: DISM/FT/2B/21
+*/
+
 // This is used for the colour shift of the carousel
 $(document).ready(function(){
 	// Highlight bottom nav links

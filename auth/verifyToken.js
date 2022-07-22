@@ -1,3 +1,9 @@
+/*
+    Name: Ng Jun Han
+    Admin: 2008493
+    Class: DISM/FT/2B/21
+*/
+
 const jwt = require("jsonwebtoken");
 const JWT_SECRET = require("../config.js");
 

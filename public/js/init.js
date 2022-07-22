@@ -1,3 +1,9 @@
+/*
+    Name: Ng Jun Han
+    Admin: 2008493
+    Class: DISM/FT/2B/21
+*/
+
 const baseURL = "http://localhost:8080";
 // Check if the user is logged in
 $(document).ready(() => {

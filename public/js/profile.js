@@ -1,3 +1,9 @@
+/*
+    Name: Ng Jun Han
+    Admin: 2008493
+    Class: DISM/FT/2B/21
+*/
+
 $(document).ready(() => {
     if (!localStorage.getItem("token")) {
         window.location.href = "/login";
