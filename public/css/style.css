@@ -14,6 +14,12 @@ body {
 	font-size: 13px;
 }
 
+.errorFont {
+	font-size: 15px
+}
+
+/* Navbar CSS */
+
 .navbar {
 	background: #fff;
 	padding-left: 16px;
@@ -47,14 +53,17 @@ body {
 	color: #ff160c;
 }
 
-.navbar .form-inline {
-	display: inline-block;
-}
-
 .navbar a {
 	color: #888;
 	font-size: 15px;
 }
+
+.nav-item span i{
+	color: #888;
+	font-size: 20px;
+}
+
+/* End of Navbar CSS */
 
 /* Search Box CSS */
 
@@ -88,98 +97,6 @@ body {
 /* End of Search Box CSS */
 
 /* Remove after login and sign html are completed */
-.navbar .sign-up-btn {
-	min-width: 110px;
-	max-height: 36px;
-}
-
-.navbar .dropdown-menu {
-	color: #999;
-	font-weight: normal;
-	border-radius: 1px;
-	border-color: #e5e5e5;
-	box-shadow: 0 2px 8px rgba(0,0,0,.05);
-}
-
-.navbar a, .navbar a:active {
-	color: #888;
-	padding: 8px 20px;
-	background: transparent;
-	line-height: normal;
-}
-
-.navbar .navbar-form {
-	border: none;
-}
-
-.navbar .action-form {
-	width: 280px;
-	padding: 20px;
-	left: auto;
-	right: 0;
-	font-size: 14px;
-}
-
-.navbar .action-form a {		
-	color: #33cabb;
-	padding: 0 !important;
-	font-size: 14px;
-}
-
-.navbar .action-form .hint-text {
-    text-align: center;
-    margin-bottom: 15px;
-    font-size: 13px;
-}
-
-.navbar .btn-primary, .navbar .btn-primary:active {
-	color: #fff;
-	background: #33cabb !important;
-	border: none;
-}	
-
-.navbar .btn-primary:hover, .navbar .btn-primary:focus {		
-	color: #fff;
-	background: #31bfb1 !important;
-}
-
-.navbar .social-btn .btn, .navbar .social-btn .btn:hover {
-	color: #fff;
-	margin: 0;
-	padding: 0 !important;
-	font-size: 13px;
-	border: none;
-	transition: all 0.4s;
-	text-align: center;
-	line-height: 34px;
-	width: 47%;
-	text-decoration: none;
-}
-
-.navbar .social-btn .facebook-btn {
-	background: #507cc0;
-}
-
-.navbar .social-btn .facebook-btn:hover {
-	background: #4676bd;
-}
-
-.navbar .social-btn .twitter-btn {
-	background: #64ccf1;
-}
-
-.navbar .social-btn .twitter-btn:hover {
-	background: #4ec7ef;
-}
-
-.navbar .social-btn .btn i {
-	margin-right: 5px;
-	font-size: 16px;
-	position: relative;
-	top: 2px;
-}
-
-
 /* 
 	Or seperator
 	Might be useful in the future
@@ -208,34 +125,3 @@ body {
 }
 
 /* Remove after login and sign html are completed */
-.navbar .action-buttons .dropdown-toggle::after {
-	display: none;
-}
-
-.form-check-label input {
-	position: relative;
-	top: 1px;
-}
-
-@media (min-width: 1200px){
-	.form-inline .input-group {
-		width: 300px;
-		margin-left: 30px;
-	}
-}
-
-@media (max-width: 768px){
-	.navbar .dropdown-menu.action-form {
-		width: 100%;
-		padding: 10px 15px;
-		background: transparent;
-		border: none;
-	}
-	.navbar .form-inline {
-		display: block;
-	}
-	.navbar .input-group {
-		width: 100%;
-	}
-}
-

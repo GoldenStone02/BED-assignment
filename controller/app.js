@@ -8,6 +8,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const fileUpload = require('express-fileupload')
+const cors = require('cors')    // Utilize for multiple
 const urlEncodedParser = bodyParser.urlencoded({ extended: false });
 const jwt = require('jsonwebtoken');
 const JWT_SECRET = require('../config.js');
@@ -29,7 +30,9 @@ const verifyToken = require('../auth/verifyToken');
 app.use(fileUpload())         // attachs file-upload middleware
 app.use(urlEncodedParser)     // attachs body-parser middleware
 app.use(bodyParser.json())    // parse json
+app.use(cors())
 
+// Loads content from public folder
 // Resources: https://expressjs.com/en/starter/static-files.html
 app.use("/img", express.static("img"));
 app.use(express.static(path.resolve("./public")))
@@ -39,7 +42,10 @@ app.use(express.static(path.resolve("./public")))
 /* Endpoints References
 
 # Site Routing
-    • GET /users
+    • GET /
+    • GET /login
+    • POST /login
+    • Verify Token
 
 # 11 APIs
     • Endpoint 1 - POST /users
@@ -58,7 +64,6 @@ app.use(express.static(path.resolve("./public")))
     # It has been integrated into Endpoint 1 - POST /users and Endpoint 4 - PUT /users/:id
 
     * 2nd Bonus API - Promotion
-    ! Need to figure out proper APIs for promotion
     • Endpoint 12 - POST /promotion
     • Endpoint 13 - GET /promotion/
     • Endpoint 14 - DELETE /promotion/:id
@@ -78,22 +83,29 @@ app.use(express.static(path.resolve("./public")))
 // • GET /
 app.get('/', async (req, res) => {
     try {
-        res.sendFile(path.resolve("./public/index.html"));
+        res.status(200).sendFile(path.resolve("./public/index.html"));
     } catch (err) {
-        res.sendFile(path.resolve("./public/error.html"));
+        res.status(500).sendFile(path.resolve("./public/error.html"));
     }
 });
 
-// • Login
+// • GET /login
+app.get('/login', (req, res) => {
+    res.sendFile(path.resolve("./public/login.html"));
+})
+
+// • POST /login
 app.post('/login', (req, res) => {
     var email = req.body.email
     var password = req.body.password
     User.login(email, password, (err, user) => {
         if (err) {
-            res.status(500).send("500 Internal Server Error")
-            return;
+            if (err == "No response") {
+                return res.status(401).send();
+            }
+            return res.status(500).send("500 Internal Server Error")
         }
-        const payload = { user_id: user.user_id };
+        const payload = { user_id: user.user_id, role: user.role};
         console.log(payload)
         jwt.sign(
             payload, 
@@ -102,26 +114,52 @@ app.post('/login', (req, res) => {
             (err, token) => {
             if (err) {
                 console.log(err);
-                res.status(401).send();
-                return;
+                return res.status(401).send();
             } 
-            res.status(200).send({
+            return res.status(200).send({
                 token: token,
-                user_id: user.user_id,
-                role: user.role
+                user_id: user.user_id
             });
         })
     })
 });
 
 // • Verify Token
-
-
-// • Profile
-app.get('/profile', verifyToken, (req, res) => {
-    res.sendFile(path.resolve("./public/profile.html"));
+app.get('/verifyHeader', verifyToken, async (req, res) => {
+    try {
+        if (req.decodedToken == null) {
+            return res.status(200).send({
+                role: "guest"
+            });
+        } else {
+            return res.status(200).send({
+                user_id: req.decodedToken.user_id,
+                role: req.decodedToken.role
+            });
+        }
+    } catch (err) {
+        console.log(err)
+    }
 })
 
+// • Profile
+app.get('/profile', (req, res) => {
+    return res.sendFile(path.resolve("./public/profile.html"));
+})
+
+// • Signup
+app.get('/signup', (req, res) => {
+    return res.sendFile(path.resolve("./public/signup.html"))
+})
+
+// • Admin Panel
+app.get('/admin-panel', (req, res) => {
+    if (req.decodedToken.role == "admin") {
+        return res.status(200).sendFile(path.resolve("./public/admin.html"));
+    } else {
+        return res.status(200).send({message: "Not authorized"})
+    }
+})
 
 
 // End of Site Routing
@@ -142,8 +180,7 @@ app.post('/users', (req, res) => {
         // Check if the file is an image
         if (profile_picture == "") {
             console.log("Invalid Image File")
-            res.status(400).send("400 Bad Request")
-            return
+            return res.status(400).send("400 Bad Request")
         }
     }
 
@@ -155,29 +192,26 @@ app.post('/users', (req, res) => {
         if (err) {
             // Checks for Duplicate Entry
             if (err.code == "ER_DUP_ENTRY") {
-                res.status(422).send("422 Unprocessable Entity");
-                return;
+                return res.status(422).send("422 Unprocessable Entity");
             }
-            res.status(500).send("500 Internal Server Error");
+            return res.status(500).send("500 Internal Server Error");
         }
         else {
-            res.status(201).send({"userid": result});
+            return res.status(201).send({"userid": result});
         };
     });
 })
 
 // • Endpoint 2 - GET /users/
-app.get('/users', (req, res) => {
+app.get('/users', verifyToken, (req, res) => {
     User.getAllUsers((err, result) => {
         if (err) {
             if (err == "No users") {
-                res.status(200).send({'Message':"No registered users"})
-                return
+                return res.status(200).send({'Message':"No registered users"})
             }
-            res.status(500).send("500 Internal Server Error");
-            return;
+            return res.status(500).send("500 Internal Server Error");
         }
-        res.status(200).send(result);
+        return res.status(200).send(result);
     });
 })
 
@@ -188,18 +222,16 @@ app.get('/users/:id', verifyToken, (req, res) => {
         if (err) {
             // Checks if user is in the database
             if (err == "User not found") {
-                res.status(404).send({"Message": "User not in database"});
-                return;
+                return res.status(404).send({"Message": "User not in database"});
             }
-            res.status(500).send("500 Internal Server Error");
-            return;
+            return res.status(500).send("500 Internal Server Error");
         }
-        res.status(200).send(result);
+        return res.status(200).send(result);
     })
 })
 
 // • Endpoint 4 - PUT /users/:id
-app.put('/users/:id', (req, res) => {
+app.put('/users/:id', verifyToken, (req, res) => {
     var user_id = req.params.id;
     var username = req.body.username;
     var email = req.body.email;
@@ -215,8 +247,7 @@ app.put('/users/:id', (req, res) => {
         // Check if the file is an image
         if (profile_picture == "") {
             console.log("Invalid Image File")
-            res.status(400).send("400 Bad Request")
-            return
+            return res.status(400).send("400 Bad Request")
         }
     }
 
@@ -227,23 +258,20 @@ app.put('/users/:id', (req, res) => {
     User.updateUser(user_id, username, email, contact, password, role, profile_picture, (err, result) => {
         if (err) {
             if (err == "User not found") {
-                res.status(404).send({"Message": "User not in database"});
-                return;
+                return res.status(404).send({"Message": "User not in database"});
             }
             if (err.code == "ER_DUP_ENTRY" || err == "Invalid role") {
-                res.status(422).send("422 Unprocessable Entity");
-                return;
+                return res.status(422).send("422 Unprocessable Entity");
             }
-            res.status(500).send("500 Internal Server Error");
-            return;
+            return res.status(500).send("500 Internal Server Error");
         }
         // # Note, it doesn't show the content
-        res.status(204).send("204 No Content");
+        return res.status(204).send("204 No Content");
     })
 })
 
 // • Endpoint 5 - POST /airport
-app.post('/airport', (req, res) => {
+app.post('/airport', verifyToken, (req, res) => {
     var name = req.body.name;
     var country = req.body.country;
     var description = req.body.description;
@@ -252,14 +280,11 @@ app.post('/airport', (req, res) => {
         if (err) {
             // Checks for Duplicate Entry
             if (err.code == "ER_DUP_ENTRY") {
-                res.status(422).send("422 Unprocessable Entity");
-                return;
+                return res.status(422).send("422 Unprocessable Entity");
             }
-            res.status(500).send("500 Internal Server Error");
-            return;
+            return res.status(500).send("500 Internal Server Error");
         }
-        res.status(204).send("204 No Content");
-        return;
+        return res.status(204).send("204 No Content");
     })
 })
 
@@ -268,18 +293,16 @@ app.get('/airport', (req, res) => {
     Airport.getAllAirports((err, result) => {
         if (err) {
             if (err == "No airports") {
-                res.status(200).send({"Message": "No airport in database"})
-                return
+                return res.status(200).send({"Message": "No airport in database"})
             }
-            res.status(500).send("500 Internal Server Error");
-            return;
+            return res.status(500).send("500 Internal Server Error");
         }
-        res.status(200).send(result);
+        return res.status(200).send(result);
     })
 })
 
 // • Endpoint 7 - POST /flight
-app.post('/flight', (req, res) => {
+app.post('/flight', verifyToken, (req, res) => {
     var flightCode = req.body.flightCode
     var aircraft= req.body.aircraft
     var originAirportID = req.body.originAirport
@@ -290,10 +313,9 @@ app.post('/flight', (req, res) => {
 
     Flight.insertFlight(flightCode, aircraft, originAirportID, destinationAirportID, embarkDate, travelTime, price, (err, result) => {
         if (err) {
-            res.status(500).send("500 Internal Server Error");
-            return;
+            return res.status(500).send("500 Internal Server Error");
         }
-        res.status(201).send({"flight_id": result});
+        return res.status(201).send({"flight_id": result});
     })
 })
 
@@ -316,7 +338,7 @@ app.get('/flightDirect/:originAirportID/:destinationAirportID', (req, res) => {
 })
 
 // • Endpoint 9 - POST /booking/:userid/:flightid
-app.post('/booking/:userid/:flightid', (req, res) => {
+app.post('/booking/:userid/:flightid', verifyToken, (req, res) => {
     var user_id = req.params.userid
     var flight_id = req.params.flightid
     var name = req.body.name
@@ -335,7 +357,7 @@ app.post('/booking/:userid/:flightid', (req, res) => {
 })
 
 // • Endpoint 10 - DELETE /flight/:id
-app.delete('/flight/:id', (req, res) => {
+app.delete('/flight/:id', verifyToken, (req, res) => {
     var flight_id = req.params.id;
 
     Flight.deleteFlight(flight_id, (err, result) => {
@@ -368,7 +390,7 @@ app.get('/transfer/flight/:originAirportID/:destinationAirportID', (req, res) =>
 // # Promotion API
 
 // • Endpoint 12 - POST /promotion
-app.post('/promotion', (req, res) => {
+app.post('/promotion', verifyToken, (req, res) => {
     var promo_name = req.body.promo_name
     var promo_description = req.body.promo_description
     var start_date = req.body.start_date
@@ -407,7 +429,7 @@ app.get('/promotion', (req, res) => {
 
 // • Endpoint 14 - DELETE /promotion/:id
 // Delete from promotions & flight_promotions
-app.delete('/promotion/:id', (req, res) => {
+app.delete('/promotion/:id', verifyToken, (req, res) => {
     var promotion_id = req.params.id;
 
     Promotion.deletePromotion(promotion_id, (err, result) => {
@@ -434,7 +456,7 @@ app.get('/promotion/flight/:flightid', (req, res) => {
 })
 
 // • Endpoint 16 - POST /promotion/:promotionid/flight/:flightid
-app.post('/promotion/:promotionid/flight/:flightid', (req, res) => {
+app.post('/promotion/:promotionid/flight/:flightid', verifyToken, (req, res) => {
     var flight_id = req.params.flightid;
     var promotion_id = req.params.promotionid;
 
@@ -458,7 +480,7 @@ app.post('/promotion/:promotionid/flight/:flightid', (req, res) => {
 
 // • Endpoint 17 - DELETE /promotion/flight/:flightid
 // Delete flight from flight_promotions
-app.delete('/promotion/flight/:flightid', (req, res) => {
+app.delete('/promotion/flight/:flightid', verifyToken, (req, res) => {
     var flight_id = req.params.flightid;
 
     Promotion.deleteFlightPromotion(flight_id, (err, result) => {

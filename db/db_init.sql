@@ -102,11 +102,11 @@ CREATE TABLE review (
 -- .. Adding of dummy data
 -- # Add users
 INSERT INTO user (username, email, contact, password, role, profile_pic_url) 
-VALUES ('admin', 'admin@sp_air.com', '12345678', 'password123', 'Admin', './img/default.png');
+VALUES ('admin', 'admin@sp_air.com', '12345678', 'password123', 'admin', './img/default.png');
 INSERT INTO user (username, email, contact, password, role, profile_pic_url)
-VALUES ('user', 'user@sp_air.com', '12345678', 'password123', 'Customer', './img/default.png');
+VALUES ('user', 'user@sp_air.com', '12345678', 'password123', 'customer', './img/default.png');
 INSERT INTO user (username, email, contact, password, role, profile_pic_url)
-VALUES ('UltraRaptor', 'ultraraptor@sp_air.com', '12345678', 'password123', 'Customer', './img/default.png');
+VALUES ('UltraRaptor', 'ultraraptor@sp_air.com', '12345678', 'password123', 'customer', './img/default.png');
 
 -- # Add airports
 INSERT INTO airport (name, country, description) VALUES ('Changi Airport', 'Singapore', 'Main International Airport of Singapore');
