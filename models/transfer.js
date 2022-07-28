@@ -81,9 +81,9 @@ const transferDB = {
     },
     /**
      * Checks if the first flight arrival date is before the second flight departure date
-     * @param {string} firstFlightArrivalDate - The first flight arrival date
-     * @param {string} firstFlightTravelTime - The first flight travel time
-     * @param {string} secondFlightDepartureDate - The second flight departure date
+     * @param {string} firstEmbarkDate - The first flight arrival date
+     * @param {string} firstFlightTime - The first flight travel time
+     * @param {string} secondEmbarkDate - The second flight departure date
      * @returns {boolean} True if the first flight arrival date is before the second flight departure date
      * */ 
     checkEmbarkDate: (firstEmbarkDate, firstFlightTime, secondEmbarkDate) => {
