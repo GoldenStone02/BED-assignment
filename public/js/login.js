@@ -57,7 +57,6 @@ var loginFunction = async () => {
     .then((response) => {
         console.log(response.data)
         var { token, user_id } = response.data
-        localStorage.setItem("user_id", user_id)
         localStorage.setItem("token", token)
         if ($("#remMe").is(":checked")) {
             localStorage.setItem("email", email);
@@ -94,15 +93,9 @@ var loadPage = async () => {
 
 
 // Checks if data has been tampered with
-const userID = localStorage.getItem("user_id");
 const token = localStorage.getItem("token");
 window.addEventListener("storage", () => {
-    const newUserID = localStorage.getItem("user_id");
     const newToken = localStorage.getItem("token");
-    if (newUserID != userID) {
-        localStorage.setItem("user_id", userID);
-        window.location.reload();
-    } 
     if (newToken != token) {
         localStorage.setItem("token", token);
         window.location.reload();
