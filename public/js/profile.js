@@ -9,11 +9,28 @@ $(document).ready(() => {
         window.location.href = "/login";
     }
     loadProfile();
+
 });
 
+// Note the user can still type the characer "e" or "E"
+// Source: https://stackoverflow.com/questions/469357/html-text-input-allow-only-numeric-input
 var loadProfile = async () => {
+    var {user_id, role} = await axios
+        .get(`${baseURL}/verifyHeader`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            }
+        })
+        .then((response) => {
+            console.log(response.data);
+            return response.data;
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+
     await axios
-        .get(`${baseURL}/users/${localStorage.getItem("user_id")}`, {
+        .get(`${baseURL}/users/${user_id}}`, {
             headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
             },
@@ -46,19 +63,19 @@ var loadProfile = async () => {
                     <tr>
                         <td>Contact</td>
                         <td class="group">
-                            <input type="text" name="contact" id="contact" value="${response.data.contact}" readonly required>
+                            <input type="number" name="contact" id="contact" value="${response.data.contact}" readonly required>
                         </td>
                     </tr>
                     <tr id="passDiv" class="invisible collapse">
                         <td>Password</td>
                         <td class="group">
-                            <input type="password" name="password" id="password" value="" readonly required>
+                            <input type="password" name="password" id="password" value="" required>
                         </td>
                     </tr>
                     <tr id="confirmPassDiv" class="invisible collapse">
                         <td>Confirm </td>
                         <td class="group">
-                            <input type="password" name="password2" id="confirmPass" value="" required>
+                            <input type="password" name="confirmPass" id="confirmPass" value="" required>
                         </td>
                     </tr>
                 </tbody>
@@ -75,24 +92,30 @@ var loadProfile = async () => {
         .catch((err) => {
             console.log(err);
         });
+    await $("#placeholder").remove()
+    await $("#placeholder2").remove()
+    await $("#profilePic").removeClass("skeleton")
 };
 
-// Show the password fields
+// Make fields editable
+// Password field is hidden by default
 $("#editBtn").on("click", () => {
     // Change buttons to update and cancel
-    $("#updateBtn").removeClass("invisible collapse");
+    $("#saveBtn").removeClass("invisible collapse");
     $("#cancelBtn").removeClass("invisible collapse");
     $("#editBtn").addClass("invisible collapse");
     $("#logoutBtn").addClass("invisible collapse");
+
+    // Change password button
+    $("#changePassBtn").addClass("invisible collapse");
 
     // Change the inputs to be editable
     $("#username").removeAttr("readonly");
     $("#email").removeAttr("readonly");
     $("#contact").removeAttr("readonly");
-    $("#passDiv").removeClass("invisible collapse");
-    $("#confirmPassDiv").removeClass("invisible collapse");
 });
 
+// This is for the saving and uploading of images to the database
 $("#save").on("click", async () => {
     await axios
         .get(`${baseURL}/verifyHeader`, {
@@ -102,22 +125,19 @@ $("#save").on("click", async () => {
         })
         .then((response) => {
             // Checks if the user_id in local storage and jwt token are the same.
-            if (response.data.user_id == localStorage.getItem("user_id")) {
+            if (response.data.user_id == user_id) {
                 // Check if the username, email or contact are empty
-                $("#updateBtn").addClass("invisible collapse");
+                $("#saveBtn").addClass("invisible collapse");
                 $("#cancelBtn").addClass("invisible collapse");
                 $("#editBtn").removeClass("invisible collapse");
                 $("#logoutBtn").removeClass("invisible collapse");
 
                 updateProfile();
-                window.location.reload()
-
             } else {
                 // Automatically logout the user
                 localStorage.removeItem("remMe");
                 localStorage.removeItem("email");
                 localStorage.removeItem("token");
-                localStorage.removeItem("user_id");
                 window.location.href = "/login";
             }
         })
@@ -126,8 +146,8 @@ $("#save").on("click", async () => {
         });
 });
 
-// Update the profile information
-$("#updateBtn").on("click", async () => {
+// Save the profile information
+$("#saveBtn").on("click", async () => {
     await axios
         .get(`${baseURL}/verifyHeader`, {
             headers: {
@@ -136,46 +156,70 @@ $("#updateBtn").on("click", async () => {
         })
         .then((response) => {
             // Checks if the user_id in local storage and jwt token are the same.
-            if (response.data.user_id == localStorage.getItem("user_id")) {
+            if (response.data.user_id == user_id) {
                 // Check if the username, email or contact are empty
                 if ($("#username").val() == "" || $("#email").val() == "" || $("#contact").val() == "") {
-                    console.log(typeof($("#username").val()));
                     alert("Please fill in all fields");
                     return
                 }
+                
+                // Check if the user is trying to change the password
+                // Breaks out of the function
+                if ($("#passDiv").hasClass("invisible")) {
+                    console.log("No password change");
 
-                console.log($("#password").val())
-                console.log($("#confirmPass").val())
-                if ($("#password").val() == $("#confirmPass").val() && $("#password").val() != "") {                
                     // Change buttons to edit and logout
-                    $("#updateBtn").addClass("invisible collapse");
+                    $("#saveBtn").addClass("invisible collapse");
                     $("#cancelBtn").addClass("invisible collapse");
                     $("#editBtn").removeClass("invisible collapse");
                     $("#logoutBtn").removeClass("invisible collapse");
+
+                    // Change password button
+                    $("#changePassBtn").removeClass("invisible collapse");
 
                     // Change the inputs to be editable
                     $("#username").attr("readonly", true);
                     $("#email").attr("readonly", true);
                     $("#contact").attr("readonly", true);
 
-                    // Remove the password fields
-                    $("#password").val('')
-                    $("#password2").val('')
-                    $("#passDiv").addClass("invisible collapse");
-                    $("#confirmPassDiv").addClass("invisible collapse");
-
-                    updateProfile();
+                    updateProfile()
                     // window.location.reload()
+                    return
+                } 
+
+                // If so, check if the password is empty
+                if ($("#password").val() == $("#confirmPass").val() && $("#password").val() != "") {    
+                    // Change buttons to edit and logout
+                    $("#saveBtn").addClass("invisible collapse");
+                    $("#cancelBtn").addClass("invisible collapse");
+                    $("#editBtn").removeClass("invisible collapse");
+                    $("#logoutBtn").removeClass("invisible collapse");
+
+                    // Clears the error message
+                    $(".errorFont").addClass("invisible collapse")
+
+                    // Change password button
+                    $("#changePassBtn").removeClass("invisible collapse");
+
+                    // Change the inputs to be editable
+                    $("#username").attr("readonly", true);
+                    $("#email").attr("readonly", true);
+                    $("#contact").attr("readonly", true);
+
+                    // Saves changes and updates it
+                    updateProfile();
+                    return
                 } else {
-                    console.log("Passwords do not match");
+                    // returns password and confirm password not matching
+                    $(".errorFont").removeClass("invisible collapse")
                 }
+
 
             } else {
                 // Automatically logout the user
                 localStorage.removeItem("remMe");
                 localStorage.removeItem("email");
                 localStorage.removeItem("token");
-                localStorage.removeItem("user_id");
                 window.location.href = "/login";
             }
         })
@@ -184,20 +228,42 @@ $("#updateBtn").on("click", async () => {
         });
 });
 
+// Make all fields editable again
+// Show the password fields
+$("#changePassBtn").on("click", () => {
+    // Change buttons to update and cancel
+    $("#saveBtn").removeClass("invisible collapse");
+    $("#cancelBtn").removeClass("invisible collapse");
+    $("#editBtn").addClass("invisible collapse");
+    $("#logoutBtn").addClass("invisible collapse");
+
+    // Change password button
+    $("#changePassBtn").addClass("invisible collapse");
+
+    // Change the inputs to be editable
+    $("#username").removeAttr("readonly");
+    $("#email").removeAttr("readonly");
+    $("#contact").removeAttr("readonly");
+    $("#passDiv").removeClass("invisible collapse");
+    $("#confirmPassDiv").removeClass("invisible collapse");
+});
+
 $("#logoutBtn").on("click", () => {
-    localStorage.removeItem("remMe");
-    localStorage.removeItem("email");
+    // localStorage.removeItem("remMe");
+    // localStorage.removeItem("email");
     localStorage.removeItem("token");
-    localStorage.removeItem("user_id");
     window.location.href = "/login";
 });
 
 $("#cancelBtn").on("click", () => {
     // Change buttons to edit and logout
-    $("#updateBtn").addClass("invisible collapse");
+    $("#saveBtn").addClass("invisible collapse");
     $("#cancelBtn").addClass("invisible collapse");
     $("#editBtn").removeClass("invisible collapse");
     $("#logoutBtn").removeClass("invisible collapse");
+
+    // Change password button
+    $("#changePassBtn").removeClass("invisible collapse");
 
     // Change the inputs to be editable
     $("#username").attr("readonly", true);
@@ -206,16 +272,39 @@ $("#cancelBtn").on("click", () => {
     
     // Remove the password fields
     $("#password").val('')
-    $("#password2").val('')
+    $("#confirmPass").val('')
     $("#passDiv").addClass("invisible collapse");
     $("#confirmPassDiv").addClass("invisible collapse");
+
+    $(".errorFont").addClass("invisible collapse")
+
+    // Clear profile information
+    $("#userInfo").clear()
+    $("profileInfo").clear()
+    // Reloads profile
+    loadProfile()
 });
 
 // ! Uploading of images isn't working yet
 var updateProfile = async () => {
+    var {user_id, role} = await axios
+        .get(`${baseURL}/verifyHeader`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            }
+        })
+        .then((response) => {
+            console.log(response.data);
+            return response.data;
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+    console.log("Sent password")
+    console.log($("#password").val())
     await axios
         .put(
-            `${baseURL}/users/${localStorage.getItem("user_id")}`,
+            `${baseURL}/users/${user_id}`,
             {
                 user_id: localStorage.getItem("user_id"),
                 username: $("#username").val(),
@@ -223,7 +312,7 @@ var updateProfile = async () => {
                 contact: $("#contact").val(),
                 role: $("#role").val(),
                 password: $("#password").val(),
-                // profile_pic_url: $("#imageFile").files[0]
+                profile_pic_url: $("#imageFile")[0].files[0]
             },
             {
                 headers: {
@@ -233,10 +322,18 @@ var updateProfile = async () => {
             }
         )
         .then((response) => {
+            // Remove the password fields for next attempt after saving.
+            $("#password").val('')
+            $("#confirmPass").val('')
+            $("#passDiv").addClass("invisible collapse");
+            $("#confirmPassDiv").addClass("invisible collapse");
+
             // Update the information being displayed
             console.log(response);
         })
         .catch((err) => {
             console.log(err);
         });
+    // Needs to wait for data to be processed before reloads
+    await window.location.reload()
 };
