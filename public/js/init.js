@@ -5,10 +5,12 @@
 */
 
 const baseURL = "http://localhost:8080";
-// Check if the user is logged in
+var user_id; // Declared as a global variable
+
 $(document).ready(() => {
-    $('[data-toggle="tooltip"]').tooltip();
+    // Check if the user is logged in
     if (localStorage.getItem("token") != null) {
+        // Returns user_id and role from the server token
         getRole()
     } else {
         console.log("Everyone can access panel")
@@ -32,12 +34,10 @@ $(document).ready(() => {
 var logout = () => {
     if (localStorage.getItem("remMe") == "true") {
         localStorage.removeItem("token");
-        localStorage.removeItem("user_id");
     } else {
         localStorage.removeItem("remMe")
         localStorage.removeItem("email")
         localStorage.removeItem("token");
-        localStorage.removeItem("user_id");
     }
     window.location.href = "/login";
 };
@@ -51,21 +51,29 @@ var getRole = async () => {
             }
         })
         .then((response) => {
-            console.log(response)
+            user_id = response.data.user_id
+            role = response.data.role
             if (response.data.role == "admin") {
                 // Show the admin control panel
                 // Ensure that the admin routes are protected
                 console.log("Admin Panel")
                 $("#accHandler").prepend(`
                 <div class="nav-item">
-                    <a href="/admin-panel" class="nav-link mx-4">
+                    <a href="/admin-panel" class="nav-link mx-3">
                         <span data-toggle="tooltip" title="Settings">
                         <i class="fa-solid fa-gear"></i>
                         </span>
                     </a>
                 </div>                
                 <div class="nav-item">
-                    <button class="btn btn-light mx-4" onclick="logout()">
+                    <a href="/profile" class="nav-link mx-2">
+                        <span data-toggle="tooltip" data-placement="bottom" title="Account Settings">
+                        <i class="fa-solid fa-user"></i>
+                        </span>
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <button class="btn btn-light mx-3" onclick="logout()">
                         <span data-toggle="tooltip" data-placement="bottom" title="Logout">
                         <i class="fa-solid fa-right-from-bracket"></i>
                         </span>
@@ -99,11 +107,3 @@ var getRole = async () => {
             console.log(err)
         })
 }
-
-
-// // Splitting array into segmented chunks
-// // Resource: https://fedingo.com/how-to-split-array-into-chunks-in-javascript/
-// array = [(1,2,7,7),(3,5,6,9)]
-// array.forEach((e) => {
-    
-// })

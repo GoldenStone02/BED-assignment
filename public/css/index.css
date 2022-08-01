@@ -4,56 +4,35 @@
     Class: DISM/FT/2B/21
 */
 
-/* Carousel CSS */
-.carousel {
-	margin: 30px 0;
-    background: #ccc;
+#call-to-action {
+	/* background-image: url(https://i.picsum.photos/id/10/1920/1000.jpg?hmac=-jg2dowz0cZxPCHXmqRArbSzutk1LqYD4zRqA6zeRgo); */
+	z-index: 1;
 }
-.carousel .carousel-item {
-    text-align: center;
-	overflow: hidden;
-    height: 475px;
+
+#introBG {
+	padding: 30px;
+	background: #fff;
+	z-index: 2;
+	border-radius: 10px;
 }
-.carousel .carousel-item img {
-	max-width: 100%;
-    margin: 0 auto; /* Align slide image horizontally center in Bootstrap v3 */
+
+#flightInput {
+	padding: 30px;
+	background: #f6f6f6;
+	z-index: 2;
+	border-radius: 10px;
 }
-.carousel-caption h3, .carousel-caption p {
-	color: #fff;
-	display: inline-block;
-	font-family: 'Oswald', sans-serif;
-	text-shadow: none;
-	margin-bottom: 20px;
+
+.word-size {
+	font-weight: bold;
+	font-size: 15px;
 }
-.carousel-caption h3 {
-	background: rgba(0,0,0,0.9);
-	padding: 12px 24px;
-	font-size: 40px;	
-	text-transform: uppercase;
+
+label {
+	margin-left: 8px;
 }
-.carousel-caption p {
-	background: #20b0b9;
-	padding: 10px 20px;
-	font-size: 20px;
-	font-weight: 300;
-}
-.carousel .nav {	
-	background: #eee;
-}
-.carousel .nav a {
-	color: #333;
-	border-radius: 0;
-	font-size: 85%;
-	padding: 10px 16px;
-	background: transparent;
-}
-.carousel .nav .active a {
-	color: #fff;
-	background: #20b0b9;
-}
-.carousel .nav strong {
-	display: block;
-	font-family: 'Roboto', sans-serif;
-	font-size: 110%;
-	text-transform: uppercase;
+
+.switchBtn {
+	margin-left: 0;
+	margin-right: 0;
 }
