@@ -88,7 +88,6 @@ const userDB = {
                 return callback("User not found", null)
             }
 
-            console.log(result)
             // Use previous values if new values are not provided
             // Else, will change the values to the new ones
             var og_values = {
