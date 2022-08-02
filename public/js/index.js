@@ -73,6 +73,8 @@ $("#flight-search").on("click", () => {
     var originAirport_id = $('#departureAirport').children("option:selected").val()
     var destinationAirport_id = $('#arrivalAirport').children("option:selected").val()
 
+    var flight_type = $("#flight-type").val()
+
     // Check if the airports are the same
     if (originAirport_id == destinationAirport_id) {
         $("#errorModal").modal('toggle')
@@ -82,7 +84,7 @@ $("#flight-search").on("click", () => {
     
     
     // Check what type of flight it is
-    if ($("#flight-type").val() == "one-way") {
+    if (flight_type == "one-way") {
         var departureDate = $("#departureDate").val()
         // Check if the date is valid
         if (departureDate == "") {
@@ -90,11 +92,12 @@ $("#flight-search").on("click", () => {
             $(".modal-text-body").text("Please fill in your departure date.")
             return
         }
-        console.log(originAirport_id)
-        console.log(destinationAirport_id)
-        // Search for destination flights
-        searchForFlight("travelDest", originAirport_id, destinationAirport_id, departureDate)
-        
+
+        // Redirects to the browse-flights
+        window.location.href = "/browse-flights?origin=" + originAirport_id + 
+        "&dest=" + destinationAirport_id + 
+        "&departDate=" + departureDate + 
+        "&type=" + flight_type
     } else {
         var departureDate = $("#departureDate").val()
         var returnDate = $("#returnDate").val()
@@ -105,33 +108,8 @@ $("#flight-search").on("click", () => {
             $(".modal-text-body").text("Please fill in your departure AND return dates.")
             return
         }
-
-        // Search for destination flights
-        searchForFlight("travelDest", originAirport_id, destinationAirport_id, departureDate)
-        // Search for return flights
-        searchForFlight("travelBack", destinationAirport_id, originAirport_id, returnDate)
-
+        
+        window.location.href = "/browse-flights?origin=" + originAirport_id + "&dest=" + destinationAirport_id + "&departDate=" + departureDate + "&returnDate=" + returnDate
+        + "&type=" + flight_type
     }
-    window.location.href = "/browse-flights"
 })
-
-// Get the flights, put them into local storage, then redirect the page to flight listings.
-/** Queries for flight Direction
- * @param {string} storage_name - Naming for queried values to be stored in localStorage.
- * @param {number} first_airport_id - The origin airport within the search
- * @param {number} second_airport_id - The destination airport within the search
- * @param {Date} givenDate - Date to start from.
- * */ 
-var searchForFlight = async (storage_name, first_airport_id, second_airport_id, givenDate) => {
-    console.log(givenDate)
-    await axios
-        .get(`${baseURL}/flightDirect/${first_airport_id}/${second_airport_id}`)
-        .then((response) => {
-            console.log(response.data)
-            localStorage.setItem(storage_name, JSON.stringify(response.data))
-            // Add the flights to local storage
-        })
-        .catch((err) => {
-            console.log(err)
-        })
-    }
