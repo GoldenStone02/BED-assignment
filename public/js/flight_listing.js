@@ -31,11 +31,7 @@ console.log(flightType)
 if (flightType == "one-way") {
     // Search for destination flights
     axios
-        .get(`${baseURL}/flightDirect/${originAirportId}/${destinationAirportId}`, {
-            body: {
-                date: departureDate
-            }
-        })
+        .get(`${baseURL}/flightDirect/${departureDate}/${originAirportId}/${destinationAirportId}`)
         .then((response) => {
             console.log(response.data)
             loadFlights(response.data)
@@ -56,15 +52,13 @@ if (flightType == "one-way") {
 var loadFlights = async (db_response) => {
 
     // Check if the flight list is empty
-    if (db_response) {
-        if (db_response == "No flights for given flight directions") {
-            $("#flight_list").append(`
-            <h3 class="alert alert-danger w-50 mx-auto my-3">
-            No flights found for given flight directions
-            </h3>
-            `)
-            return
-        }
+    if (db_response.Message == "No flights for given flight directions") {
+        $("#flight_list").append(`
+        <h3 class="alert alert-danger w-50 mx-auto my-3">
+        No flights found for given flight directions
+        </h3>
+        `)
+        return
     }
 
     // ! Still need to redirect the user to the correct flight details page

@@ -51,14 +51,15 @@ const flightDB = {
         })
     },
     // .. GET flight information
-    getFlightDirect: function (origin_airport_id, destination_airport_id, callback) {
+    getFlightDirect: function (origin_airport_id, destination_airport_id, givenDate, callback) {
         console.log("Connected! Getting flight information...");
-        var params = [origin_airport_id, destination_airport_id];
+        var params = [origin_airport_id, destination_airport_id, givenDate];
         var sql = `
-        SELECT f.flight_id, f.flightCode, f.aircraft, a1.name as originAirport, a2.name as destinationAirport, f.embarkDate, f.travelTime, f.price 
+        SELECT f.flight_id, f.flightCode, f.aircraft, a1.name as originAirport, a2.name as destinationAirport, f.embarkDate, f.travelTime, f.price, a1.country as originCountry, a2.country as destinationCountry
         FROM flight as f, airport as a1, airport as a2 
         WHERE originAirport = ? AND destinationAirport = ? 
-        AND f.originAirport = a1.airport_id AND f.destinationAirport = a2.airport_id`;
+        AND f.originAirport = a1.airport_id AND f.destinationAirport = a2.airport_id
+        AND f.embarkDate >= ?`;
 
         pool.query(sql, params, (err, result) => {
             if (err) {
@@ -69,6 +70,8 @@ const flightDB = {
                 console.log("No flights found")
                 return callback("No flights found")
             }
+
+            
 
             console.table(result)
             return callback(null, result)
