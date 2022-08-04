@@ -5,7 +5,6 @@
 */
 
 const baseURL = "http://localhost:8080";
-var user_id; // Declared as a global variable
 
 $(document).ready(() => {
     // Check if the user is logged in
@@ -51,9 +50,8 @@ var getRole = async () => {
             }
         })
         .then((response) => {
-            user_id = response.data.user_id
             role = response.data.role
-            if (response.data.role == "admin") {
+            if (role == "admin") {
                 // Show the admin control panel
                 // Ensure that the admin routes are protected
                 console.log("Admin Panel")
@@ -80,7 +78,7 @@ var getRole = async () => {
                     </button>
                 </div>
                 `)
-            } else if (response.data.role == "customer") {
+            } else if (role == "customer") {
                 console.log("User panel")
                 // Show the user profile and logout
                 $("#accHandler").prepend(`
