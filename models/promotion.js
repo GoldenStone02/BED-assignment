@@ -135,6 +135,18 @@ const promotionDB = {
             console.log(`${result.affectedRows} row has been affected`);
             return callback(null, result.affectedRows);
         })
+    },
+    getAllFlightPromotion: function (callback) {
+        console.log("Connected! Getting all flight promotions...");
+        var sql = `SELECT flight_id, promotion_id FROM flight_promotion`;
+        pool.query(sql, (err, result) => {
+            if (err) {
+                console.log(err);
+                return callback(err, null);
+            }
+            console.table(result)
+            return callback(null, result);
+        } )
     }
 }
 

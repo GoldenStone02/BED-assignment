@@ -25,7 +25,7 @@ const airportDB = {
     // .. GET all airports
     getAllAirports: function(callback) {
         console.log("Connected! Getting all airports...");
-        var sql = "SELECT airport.airport_id, airport.name, airport.country FROM airport";
+        var sql = "SELECT airport.airport_id, airport.name, airport.country, airport.description FROM airport";
         pool.query(sql, (err, result) => {
             if (err) {
                 console.log(err)

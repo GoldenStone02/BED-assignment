@@ -23,6 +23,22 @@ const bookingDB = {
             console.table(result)
             return callback(null, result.insertId);
         })
+    },
+    getAllBookings: function (callback) {
+        console.log("Connected! Getting all bookings...");
+        var sql = "SELECT booking.booking_id, booking.user_id, booking.flight_id, booking.name, booking.passport, booking.nationality, booking.age, booking.created_at FROM booking";
+        pool.query(sql, (err, result) => {
+            if (err) {
+                console.log(err)
+                return callback(err, null)
+            }
+            if (result.length == 0) {
+                console.log("There are no bookings.")
+                return callback("No bookings", null)
+            }
+            console.table(result)
+            return callback(null, result);
+        })
     }
 }
 

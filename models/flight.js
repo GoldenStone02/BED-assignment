@@ -70,7 +70,6 @@ const flightDB = {
                 console.log("No flights found")
                 return callback("No flights found")
             }
-
             
 
             console.table(result)

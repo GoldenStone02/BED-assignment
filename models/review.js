@@ -41,6 +41,25 @@ const reviewDB = {
             console.table(result)
             return callback(null, result);
         })
+    },
+    getAllReview: function (callback) {
+        var sql = `SELECT r.review_id, u.user_id, u.username, r.flight_id, r.rating, r.review_text 
+        FROM review as r, user as u 
+        WHERE r.user_id = u.user_id;`
+        pool.query(sql, (err, result) => {
+            if (err) {
+                console.log(err);
+                return callback(err, null);
+            }
+
+            if (result.length == 0) {
+                console.log("No review in database")
+                return callback("No reviews", null)
+            }
+
+            console.table(result)
+            return callback(null, result);
+        })
     }
 }
 

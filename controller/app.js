@@ -35,9 +35,11 @@ app.use(cors())
 // Loads content from public folder
 // Resources: https://expressjs.com/en/starter/static-files.html
 app.use("/img", express.static("img"));
+// app.use(express.static(__dirname + './public/css'));
+// app.use(express.static(__dirname + './public/js'));
 app.use(express.static(path.resolve("./public")))
 
-// ! Create middleware that ensures the keys are entered in correctly
+
 
 /* Endpoints References
 
@@ -46,8 +48,14 @@ app.use(express.static(path.resolve("./public")))
     • GET /login
     • POST /login
     • Verify Token
-
-# 11 APIs
+    • Profile
+    • Signup
+    • Admin Panel
+    • Browse Flights
+    • Flight Details
+    • Error Page
+    
+    # 11 APIs
     • Endpoint 1 - POST /users
     • Endpoint 2 - GET /users
     • Endpoint 3 - GET /users/:id
@@ -55,7 +63,7 @@ app.use(express.static(path.resolve("./public")))
     • Endpoint 5 - POST /airport
     • Endpoint 6 - GET /airport
     • Endpoint 7 - POST /flight
-    • Endpoint 8 - GET /flightDirect/:originAirportId/:destinationAirportId
+    • Endpoint 8 - GET /flightDirect/:date/:originAirportId/:destinationAirportId
     • Endpoint 9 - POST /booking/:userid/:flightid
     • Endpoint 10 - DELETE /flight/:id
     • Endpoint 11 - GET /transfer/flight/:originAirportId/:destinationAirportId
@@ -79,13 +87,15 @@ app.use(express.static(path.resolve("./public")))
     • Endpoint 20 - GET /flight (Gets all flights)
 */
 
+
+// ######################################################################################################################
 // Site Routing
 // • GET /
 app.get('/', async (req, res) => {
     try {
         res.status(200).sendFile(path.resolve("./public/index.html"));
     } catch (err) {
-        res.status(500).sendFile(path.resolve("./public/error.html"));
+        res.status(500).sendFile(path.resolve("./public/404.html"));
     }
 });
 
@@ -154,15 +164,24 @@ app.get('/signup', (req, res) => {
 
 // • Admin Panel
 app.get('/admin-panel', (req, res) => {
-    if (req.decodedToken.role == "admin") {
-        return res.status(200).sendFile(path.resolve("./public/admin.html"));
-    } else {
-        return res.status(200).send({message: "Not authorized"})
-    }
+    return res.status(200).sendFile(path.resolve("./public/admin.html"));
+})
+
+// • Browse Flights
+app.get('/browse-flights', (req, res) => {
+    return res.sendFile(path.resolve("./public/flight_listing.html"));
+})
+
+// • Flight Details
+app.get('/flight-details', (req, res) => {
+    return res.sendFile(path.resolve("./public/flight_details.html"));
 })
 
 
+
 // End of Site Routing
+
+// ######################################################################################################################
 
 // • Endpoint 1 - POST /users/
 app.post('/users', (req, res) => {
@@ -303,57 +322,74 @@ app.get('/airport', (req, res) => {
 
 // • Endpoint 7 - POST /flight
 app.post('/flight', verifyToken, (req, res) => {
-    var flightCode = req.body.flightCode
-    var aircraft= req.body.aircraft
-    var originAirportID = req.body.originAirport
-    var destinationAirportID = req.body.destinationAirport
-    var embarkDate = req.body.embarkDate
-    var travelTime = req.body.travelTime
-    var price = req.body.price
-
-    Flight.insertFlight(flightCode, aircraft, originAirportID, destinationAirportID, embarkDate, travelTime, price, (err, result) => {
-        if (err) {
-            return res.status(500).send("500 Internal Server Error");
-        }
-        return res.status(201).send({"flight_id": result});
-    })
+    if (req.decodedToken.role != "admin" || req.decodedToken == null) {
+        return res.status(403).send("403 Forbidden");
+    } else {
+        var flightCode = req.body.flightCode
+        var aircraft= req.body.aircraft
+        var originAirportID = req.body.originAirport
+        var destinationAirportID = req.body.destinationAirport
+        var embarkDate = req.body.embarkDate
+        var travelTime = req.body.travelTime
+        var price = req.body.price
+    
+        Flight.insertFlight(flightCode, aircraft, originAirportID, destinationAirportID, embarkDate, travelTime, price, (err, result) => {
+            if (err) {
+                return res.status(500).send("500 Internal Server Error");
+            }
+            return res.status(201).send({"flight_id": result});
+        })
+    }
 })
 
-// • Endpoint 8 - GET /flightDirect/:originAirportId/:destinationAirportId
-app.get('/flightDirect/:originAirportID/:destinationAirportID', (req, res) => {
+// [Modified] 
+// - Return Country
+// • Endpoint 8 - GET /flightDirect/:date/:originAirportId/:destinationAirportId
+app.get('/flightDirect/:date/:originAirportID/:destinationAirportID', (req, res) => {
     var originAirportID = req.params.originAirportID;
     var destinationAirportID = req.params.destinationAirportID;
+    var givenDate = req.params.date
 
-    Flight.getFlightDirect(originAirportID, destinationAirportID, (err, result) => {
+    // ! Need to modify to query for flights that are on or after th given date
+    Flight.getFlightDirect(originAirportID, destinationAirportID, givenDate, (err, result) => {
         if (err) {
             if (err == "No flights found") {
-                res.status(404).send({"Message":"No flights for given flight directions"})
+                // # [NOTE] This is a temporary solution
+                res.status(200).send({"Message":"No flights for given flight directions"})
                 return
             }
             res.status(500).send("500 Internal Server Error");
             return;
         }
+
+        // Filter to ensure that the data given matches the data that was given.
+
+
         res.status(200).send(result);
     })
 })
 
 // • Endpoint 9 - POST /booking/:userid/:flightid
 app.post('/booking/:userid/:flightid', verifyToken, (req, res) => {
-    var user_id = req.params.userid
-    var flight_id = req.params.flightid
-    var name = req.body.name
-    var passport = req.body.passport
-    var nationality = req.body.nationality
-    var age = req.body.age
+    if (req.decodedToken.role != "admin" || req.decodedToken == null) {
+        return res.status(403).send("403 Forbidden");
+    } else {
+        var user_id = req.params.userid
+        var flight_id = req.params.flightid
+        var name = req.body.name
+        var passport = req.body.passport
+        var nationality = req.body.nationality
+        var age = req.body.age
 
-    Booking.insertBooking(user_id, flight_id, name, passport, nationality, age, (err, result) => {
-        if (err) {
-            console.log(err)
-            res.status(500).send("500 Internal Server Error");
-            return
-        }
-        res.status(201).send({"booking_id": result});
-    })
+        Booking.insertBooking(user_id, flight_id, name, passport, nationality, age, (err, result) => {
+            if (err) {
+                console.log(err)
+                res.status(500).send("500 Internal Server Error");
+                return
+            }
+            res.status(201).send({"booking_id": result});
+        })
+    }
 })
 
 // • Endpoint 10 - DELETE /flight/:id
@@ -391,29 +427,33 @@ app.get('/transfer/flight/:originAirportID/:destinationAirportID', (req, res) =>
 
 // • Endpoint 12 - POST /promotion
 app.post('/promotion', verifyToken, (req, res) => {
-    var promo_name = req.body.promo_name
-    var promo_description = req.body.promo_description
-    var start_date = req.body.start_date
-    var end_date = req.body.end_date
-    var discount = req.body.discount
+    if (req.decodedToken.role != "admin" || req.decodedToken == null) {
+        return res.status(403).send("403 Forbidden");
+    } else {
+        var promo_name = req.body.promo_name
+        var promo_description = req.body.promo_description
+        var start_date = req.body.start_date
+        var end_date = req.body.end_date
+        var discount = req.body.discount
 
-    Promotion.insertPromotion(promo_name, promo_description, start_date, end_date, discount, (err, result) => {
-        if (err) {
+        Promotion.insertPromotion(promo_name, promo_description, start_date, end_date, discount, (err, result) => {
+            if (err) {
 
-            if (err == "Promotion already exists") {
-                res.status(422).send({"Message": "Promotion already exists"})
+                if (err == "Promotion already exists") {
+                    res.status(422).send({"Message": "Promotion already exists"})
+                    return;
+                }
+
+                if (err == "Invalid Date") {
+                    res.status(400).send({"Message": "Invalid Date"});
+                    return;
+                }
+                res.status(500).send("500 Internal Server Error");
                 return;
             }
-
-            if (err == "Invalid Date") {
-                res.status(400).send({"Message": "Invalid Date"});
-                return;
-            }
-            res.status(500).send("500 Internal Server Error");
-            return;
-        }
-        res.status(201).send({"promotion_id": result});
-    })
+            res.status(201).send({"promotion_id": result});
+        })
+    }
 })
 
 // • Endpoint 13 - GET /promotion/
@@ -430,15 +470,19 @@ app.get('/promotion', (req, res) => {
 // • Endpoint 14 - DELETE /promotion/:id
 // Delete from promotions & flight_promotions
 app.delete('/promotion/:id', verifyToken, (req, res) => {
-    var promotion_id = req.params.id;
+    if (req.decodedToken.role != "admin" || req.decodedToken == null) {
+        return res.status(403).send("403 Forbidden");
+    } else {
+        var promotion_id = req.params.id;
 
-    Promotion.deletePromotion(promotion_id, (err, result) => {
-        if (err) {
-            res.status(500).send("500 Internal Server Error");
-            return;
-        }
-        res.status(200).send({"Message": "Deletion successful"});
-    })
+        Promotion.deletePromotion(promotion_id, (err, result) => {
+            if (err) {
+                res.status(500).send("500 Internal Server Error");
+                return;
+            }
+            res.status(200).send({"Message": "Deletion successful"});
+        })
+    }
 })
 
 // • Endpoint 15 - GET /promotion/flight/:flightid
@@ -457,39 +501,47 @@ app.get('/promotion/flight/:flightid', (req, res) => {
 
 // • Endpoint 16 - POST /promotion/:promotionid/flight/:flightid
 app.post('/promotion/:promotionid/flight/:flightid', verifyToken, (req, res) => {
-    var flight_id = req.params.flightid;
-    var promotion_id = req.params.promotionid;
+    if (req.decodedToken.role != "admin" || req.decodedToken == null) {
+        return res.status(403).send("403 Forbidden");
+    } else {
+        var flight_id = req.params.flightid;
+        var promotion_id = req.params.promotionid;
 
-    Promotion.insertPromotionByFlightID(flight_id, promotion_id, (err, result) => {
-        if (err) {
-            if (err == "Flight not in promotion period") {
-                res.status(400).send({"Message": "Flight not in promotion period"})
+        Promotion.insertPromotionByFlightID(flight_id, promotion_id, (err, result) => {
+            if (err) {
+                if (err == "Flight not in promotion period") {
+                    res.status(400).send({"Message": "Flight not in promotion period"})
+                    return;
+                }
+                if (err.code == "ER_DUP_ENTRY") {
+                    res.status(422).send({"Message": "Flight already in promotion"})
+                    return;
+                }
+
+                res.status(500).send("500 Internal Server Error");
                 return;
             }
-            if (err.code == "ER_DUP_ENTRY") {
-                res.status(422).send({"Message": "Flight already in promotion"})
-                return;
-            }
-
-            res.status(500).send("500 Internal Server Error");
-            return;
-        }
-        res.status(201).send({"Message": "Promotion added to flight"});
-    })
+            res.status(201).send({"Message": "Promotion added to flight"});
+        })
+    }
 })
 
 // • Endpoint 17 - DELETE /promotion/flight/:flightid
 // Delete flight from flight_promotions
 app.delete('/promotion/flight/:flightid', verifyToken, (req, res) => {
-    var flight_id = req.params.flightid;
+    if (req.decodedToken.role != "admin" || req.decodedToken == null) {
+        return res.status(403).send("403 Forbidden");
+    } else {
+        var flight_id = req.params.flightid;
 
-    Promotion.deleteFlightPromotion(flight_id, (err, result) => {
-        if (err) {
-            res.status(500).send("500 Internal Server Error");
-            return;
-        }
-        res.status(200).send({"Message": "Deletion successful"});
-    })
+        Promotion.deleteFlightPromotion(flight_id, (err, result) => {
+            if (err) {
+                res.status(500).send("500 Internal Server Error");
+                return;
+            }
+            res.status(200).send({"Message": "Deletion successful"});
+        })
+    }
 })
 
 // # Review API
@@ -528,8 +580,25 @@ app.get('/review/:flightid', (req, res) => {
     })
 })
 
+// • Endpoint 20 - GET /review/
+app.get('/review/', (req, res) => {
+
+    Review.getAllReview((err, result) => {
+        if (err) {
+
+            if (err == "No reviews") {
+                res.status(404).send({"Message": "No reviews for this flight"})
+                return;
+            }
+            res.status(500).send("500 Internal Server Error");
+            return;
+        }
+        res.status(200).send(result);
+    })
+})
+
 // ! NOT PART OF REQUIREMENT
-// • Endpoint 20 - GET /flight (Gets all flights)
+// • Endpoint 21 - GET /flight (Gets all flights)
 app.get('/flight', (req, res) => {
     Flight.getAllFlights((err, result) => {
         if (err) {
@@ -543,6 +612,46 @@ app.get('/flight', (req, res) => {
         res.status(200).send(result);
     })
 })
+
+
+// • Endpoint 22 - GET /booking
+app.get('/booking', verifyToken, (req, res) => {
+    Booking.getAllBookings((err, result) => {
+        if (err) {
+            if (err == "No bookings") {
+                res.status(200).send({"Message": "No bookings in database"})
+                return
+            }
+            res.status(500).send("500 Internal Server Error");
+            return;
+        }
+        res.status(200).send(result);
+    })
+})
+
+// • Endpoint 23 - GET /promotion/flight
+app.get('/promotion/flight', verifyToken, (req, res) => {
+    Promotion.getAllFlightPromotion((err, result) => {
+        if (err) {
+            if (err == "No promotions") {
+                res.status(200).send({"Message": "No promotions in database"})
+                return
+            }
+            res.status(500).send("500 Internal Server Error");
+            return;
+        }
+        res.status(200).send(result);
+    })
+})
+
+
+// #########################################################################################################################
+
+// If user goes to an undefined route, send them to 404
+// • Error page
+app.get('*', (req, res) => {
+    res.status(404).sendFile(path.resolve("./public/404.html"));
+});
 
 
 module.exports = app
