@@ -250,7 +250,7 @@ $("#add-airport").on("click", () => {
 
                 if (err.response.status == 422) {
                     $("#name").addClass("is-invalid")
-                    alert("Airport Name already")
+                    alert("Airport Name already exists in the database")
                 }
             })
     })
