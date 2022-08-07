@@ -116,7 +116,9 @@ $("#add-flight").on("click", () => {
     getData()
     $("#add-data").on("click", () => {
         // ! Do form validation
-        
+        if ($("#flightCode").val() == "" || $("#aircraft").val() == "" || $("#departureAirport").val() == "nothing_selected" || $("#arrivalAirport").val() == "nothing_selected" || $("#embarkDate").val() == "" || $("#travelTime").val() == "" || $("#price").val() == "") {
+            alert("Please fill out all fields")
+        } 
         
         console.log(moment($("#embarkDate").val()).format("YYYY-MM-DD HH:mm:ss"))
         axios
@@ -229,6 +231,10 @@ $("#add-airport").on("click", () => {
     `)
     $("#add-data").on("click", () => {
         // ! Do form validation
+        if ($("#name").val() == "" || $("#country").val() == "" || $("#description").val() == "") {
+            alert("Please fill out all fields")
+            return
+        }
         axios
             .post(`${baseURL}/airport`, {
                 name: $("#name").val(),
