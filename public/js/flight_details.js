@@ -30,6 +30,7 @@ const destinationAirportId = $.urlParam("dest");
 const departureDate = $.urlParam("departDate");
 const returnDate = $.urlParam("returnDate");
 const flightType = $.urlParam("type");
+const transfer = $.urlParam("transfer");
 
 if (flightType == "one-way") {
     // Form setup

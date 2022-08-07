@@ -92,12 +92,20 @@ $("#flight-search").on("click", () => {
             return
         }
 
-
-        // Redirects to the browse-flights
-        window.location.href = "/browse-flights?origin=" + originAirport_id + 
-        "&dest=" + destinationAirport_id + 
-        "&departDate=" + departureDate + 
-        "&type=" + flight_type
+        // Check if transfer is selected
+        if ($('#transfer-flight').prop('checked')) {
+            console.log("Transfer flight")
+            window.location.href = "/browse-flights?origin=" + originAirport_id + 
+            "&dest=" + destinationAirport_id + 
+            "&departDate=" + departureDate + 
+            "&type=" + flight_type + "&transfer=true"
+        } else {
+            // Redirects to the browse-flights
+            window.location.href = "/browse-flights?origin=" + originAirport_id + 
+            "&dest=" + destinationAirport_id + 
+            "&departDate=" + departureDate + 
+            "&type=" + flight_type
+        }
     } else {
         var departureDate = $("#departureDate").val()
         var returnDate = $("#returnDate").val()

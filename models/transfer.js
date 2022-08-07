@@ -56,8 +56,11 @@ const transferDB = {
                             "aircraft1": e.aircraft,
                             "aircraft2": result[1][index].aircraft,
                             "originAirport": e.originName,
+                            "originAirportID": e.originAirport,
                             "transferAirport": e.transferName,
+                            "transferAirportID": e.destinationAirport,
                             "destinationAirport": result[1][index].destName,
+                            "destinationAirportID": result[1][index].destinationAirport,
                             "price": e.price + result[1][index].price
                         })
                     }

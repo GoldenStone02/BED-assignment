@@ -123,6 +123,11 @@ VALUES ("SP110", "BOEING 737", 1, 2, STR_TO_DATE("22-12-2022 08:20", "%d-%m-%Y %
 INSERT INTO flight (flightCode, aircraft, originAirport, destinationAirport, embarkDate, travelTime, price) 
 VALUES ("SP150", "BOEING 777", 2, 3, STR_TO_DATE("22-12-2022 22:00", "%d-%m-%Y %H:%i:%s"), "8 hours 50 mins", 1050.99);
 INSERT INTO flight (flightCode, aircraft, originAirport, destinationAirport, embarkDate, travelTime, price) 
+VALUES ("SP110", "BOEING 737", 3, 4, STR_TO_DATE("24-12-2022 08:20", "%d-%m-%Y %H:%i:%s"), "6 hours 50 mins", 855.5);
+INSERT INTO flight (flightCode, aircraft, originAirport, destinationAirport, embarkDate, travelTime, price) 
+VALUES ("SP150", "BOEING 777", 4, 1, STR_TO_DATE("26-12-2022 22:00", "%d-%m-%Y %H:%i:%s"), "8 hours 50 mins", 1050.99);
+
+INSERT INTO flight (flightCode, aircraft, originAirport, destinationAirport, embarkDate, travelTime, price) 
 VALUES ("SP230", "BOEING 777", 1, 2, STR_TO_DATE("22-12-2022 10:00", "%d-%m-%Y %H:%i:%s"), "6 hours 50 mins", 800);
 INSERT INTO flight (flightCode, aircraft, originAirport, destinationAirport, embarkDate, travelTime, price) 
 VALUES ("SP250", "BOEING 777", 1, 4, STR_TO_DATE("22-12-2022 10:00", "%d-%m-%Y %H:%i:%s"), "6 hours 20 mins", 750.99);
