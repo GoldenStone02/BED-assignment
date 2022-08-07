@@ -12,11 +12,12 @@ CREATE TABLE user (
     contact VARCHAR(8) NOT NULL,
     password VARCHAR(45) NOT NULL,
     role VARCHAR(45) NULL,
-    profile_pic_url VARCHAR(45) NULL,
+    profile_pic_url VARCHAR(255) NULL,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     PRIMARY KEY (user_id)
 );
 
+-- Might remove the country code as it doesn't seem to be working
 CREATE TABLE airport (
 	airport_id INT NOT NULL AUTO_INCREMENT,
     name VARCHAR(45) NOT NULL UNIQUE,
@@ -41,20 +42,6 @@ CREATE TABLE flight (
     FOREIGN KEY (destinationAirport) REFERENCES airport(airport_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-CREATE TABLE booking (
-    booking_id INT NOT NULL AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    flight_id INT NOT NULL,
-    name VARCHAR(45) NOT NULL,
-    passport VARCHAR(45) NOT NULL,
-    nationality VARCHAR(45) NOT NULL,
-    age INT NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    PRIMARY KEY (booking_id),
-    FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (flight_id) REFERENCES flight(flight_id) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
 -- .. Bonus Features to be added
 CREATE TABLE promotion (
     promotion_id INT NOT NULL AUTO_INCREMENT,
@@ -65,6 +52,22 @@ CREATE TABLE promotion (
     discount_percent INT NOT NULL,
     PRIMARY KEY (promotion_id)
 );
+
+CREATE TABLE booking (
+    booking_id INT NOT NULL AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    flight_id INT NOT NULL,
+    name VARCHAR(45) NOT NULL,
+    passport VARCHAR(45) NOT NULL,
+    nationality VARCHAR(45) NOT NULL,
+    age INT NOT NULL,
+    promotion_id INT,
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (booking_id),
+    FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (flight_id) REFERENCES flight(flight_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 
 -- # Flight Promo Many to Many table.
 CREATE TABLE flight_promotion (
@@ -85,12 +88,11 @@ CREATE TABLE review (
     review_text VARCHAR(255) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     PRIMARY KEY (review_id),
-    FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE NO ACTION ON UPDATE CASCADE,
-    FOREIGN KEY (flight_id) REFERENCES flight(flight_id) ON DELETE NO ACTION ON UPDATE CASCADE
+    FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (flight_id) REFERENCES flight(flight_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
--- -- ! Not used currently
--- -- # Used for storing of airport logos
+-- -- # Used for storing of flight images
 -- CREATE TABLE image (
 --     image_id INT NOT NULL AUTO_INCREMENT,
 --     flight_id INT NOT NULL,
@@ -102,16 +104,16 @@ CREATE TABLE review (
 -- .. Adding of dummy data
 -- # Add users
 INSERT INTO user (username, email, contact, password, role, profile_pic_url) 
-VALUES ('admin', 'admin@sp_air.com', '12345678', 'password123', 'admin', './img/default.png');
+VALUES ('admin', 'admin@sp_air.com', '12345678', 'password123', 'admin', './img/148312_admin.jpg');
 INSERT INTO user (username, email, contact, password, role, profile_pic_url)
 VALUES ('user', 'user@sp_air.com', '12345678', 'password123', 'customer', './img/default.png');
 INSERT INTO user (username, email, contact, password, role, profile_pic_url)
-VALUES ('UltraRaptor', 'ultraraptor@sp_air.com', '12345678', 'password123', 'customer', './img/default.png');
+VALUES ('UltraRaptor', 'ultraraptor@sp_air.com', '12345678', 'password123', 'customer', './img/ultraraptor_UltraRaptor.png');
 
 -- # Add airports
 INSERT INTO airport (name, country, description) VALUES ('Changi Airport', 'Singapore', 'Main International Airport of Singapore');
 INSERT INTO airport (name, country, description) VALUES ('Penang International Airport', 'Malaysia', 'Main International Airport of the State of Penang');
-INSERT INTO airport (name, country, description) VALUES ('San Francisco International Airport', 'USA', 'International Airport located in San Francisco, California');
+INSERT INTO airport (name, country, description) VALUES ('San Francisco International Airport', 'United States', 'International Airport located in San Francisco, California');
 INSERT INTO airport (name, country, description) VALUES ('Narita International Airport', 'Japan', 'International Airport located in Narita, Chiba, Tokyo');
 INSERT INTO airport (name, country, description) VALUES ('Sydney Kingsford Smith Airport', 'Sydney', 'International Airport located in Mascot, New South Wales, Australia');
 
@@ -132,12 +134,11 @@ INSERT INTO flight (flightCode, aircraft, originAirport, destinationAirport, emb
 VALUES ("SP222", "BOEING 737", 2, 3, STR_TO_DATE("23-12-2022 10:00", "%d-%m-%Y %H:%i:%s"), "8 hours 20 mins", 1000);
 INSERT INTO flight (flightCode, aircraft, originAirport, destinationAirport, embarkDate, travelTime, price) 
 VALUES ("SP222", "BOEING 737", 1, 5, STR_TO_DATE("25-12-2022 21:00", "%d-%m-%Y %H:%i:%s"), "13 hours 30 mins", 1000);
+INSERT INTO flight (flightCode, aircraft, originAirport, destinationAirport, embarkDate, travelTime, price) 
+VALUES ("SP369", "BOEING 737", 1, 5, STR_TO_DATE("25-12-2022 21:00", "%d-%m-%Y %H:%i:%s"), "12 hours 30 mins", 960);
+INSERT INTO flight (flightCode, aircraft, originAirport, destinationAirport, embarkDate, travelTime, price) 
+VALUES ("SP230", "BOEING 777", 2, 1, STR_TO_DATE("23-12-2022 20:00", "%d-%m-%Y %H:%i:%s"), "6 hours 50 mins", 650);
 
--- # Add bookings
-INSERT INTO booking (user_id, flight_id, name, passport, nationality, age) 
-VALUES (2, 1, "Kenneth Tan", "E1234555Z", "Singaporean", 20);
-INSERT INTO booking (user_id, flight_id, name, passport, nationality, age) 
-VALUES (2, 1, "Soh Hong Yu", "T1234555Z", "Singaporean", 69);
 
 -- # Add promotions
 INSERT INTO promotion (promotion_name, promotion_description, promotion_start_date, promotion_end_date, discount_percent)
@@ -150,6 +151,12 @@ VALUES ("Singapore National Day Offer","50% Discount on the month of National Da
 -- # Add flight_promotions
 INSERT INTO flight_promotion (flight_id, promotion_id) VALUES (1, 1);
 INSERT INTO flight_promotion (flight_id, promotion_id) VALUES (2, 1);
+
+-- # Add bookings
+INSERT INTO booking (user_id, flight_id, name, passport, nationality, age, promotion_id) 
+VALUES (2, 1, "Kenneth Tan", "E1234555Z", "Singaporean", 20, 1);
+INSERT INTO booking (user_id, flight_id, name, passport, nationality, age, promotion_id) 
+VALUES (2, 1, "Soh Hong Yu", "T1234547Z", "Singaporean", 69, 1);
 
 -- # Add reviews
 INSERT INTO review (user_id, flight_id, rating, review_text) VALUES (2, 1, 5, "This is a great flight");

@@ -12,7 +12,7 @@ const userDB = {
     insertUser: function (username, email, contact, password, role, profile_pic_url, callback) {
         console.log("Connected! Inserting a new user...");
         // .. Can only be Customer or Admin
-        if (role != "Customer" && role != "admin") {
+        if (role != "customer" && role != "admin") {
             console.log("Invalid role");
             return callback("Invalid role", null)
         }
@@ -128,6 +128,31 @@ const userDB = {
             }
             console.log(result)
             return callback(null, result[0])
+        })
+    },
+    deleteUser: (user_id, callback) => {
+        console.log("Connected! Deleting a user...");
+        var sql = `SELECT * FROM user WHERE user_id = ?`;
+        pool.query(sql, user_id, (err, result) => {
+            if (err) {
+                console.log(err)
+                return callback(err, null)
+            }
+            console.table(result)
+            console.log(result)
+            if (result[0].role == "admin") {
+                return callback("Cannot delete admin", null)
+            }
+
+            var sql = `DELETE FROM user WHERE user_id = ?`;
+            pool.query(sql, user_id, (err, result) => {
+                if (err) {
+                    console.log(err)
+                    return callback(err, null)
+                }
+                console.log(`${result.affectedRows} row has been affected`)
+                return callback(null, result.affectedRows)
+            })
         })
     },
 }

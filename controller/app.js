@@ -35,8 +35,6 @@ app.use(cors())
 // Loads content from public folder
 // Resources: https://expressjs.com/en/starter/static-files.html
 app.use("/img", express.static("img"));
-// app.use(express.static(__dirname + './public/css'));
-// app.use(express.static(__dirname + './public/js'));
 app.use(express.static(path.resolve("./public")))
 
 
@@ -85,6 +83,22 @@ app.use(express.static(path.resolve("./public")))
 
     * Addtional Quality of Life APIs
     • Endpoint 20 - GET /flight (Gets all flights)
+
+    * Additional APIs for Admin Panel
+    • Endpoint 21 - GET /admin/users
+    • Endpoint 21 - GET /review/
+    • Endpoint 22 - GET /booking
+    • Endpoint 23 - GET /promotion/flight
+    • Endpoint 24 - DEL /user/:userid
+    • Endpoint 25 - DEL /airport/:airportid
+    • Endpoint 26 - DEL /booking/:bookingid
+    • Endpoint 27 - DEL /review/:reviewid
+
+    * Additional APIs for Flight Details 
+    • Endpoint 28 - GET /airport/:airportid
+    • Endpoint 29 - GET /flight/:flightid
+    • Endpoint 30 - GET /promotion/:promotionid
+    • Endpoint 31 - GET /booking/:bookingid
 */
 
 
@@ -371,7 +385,7 @@ app.get('/flightDirect/:date/:originAirportID/:destinationAirportID', (req, res)
 
 // • Endpoint 9 - POST /booking/:userid/:flightid
 app.post('/booking/:userid/:flightid', verifyToken, (req, res) => {
-    if (req.decodedToken.role != "admin" || req.decodedToken == null) {
+    if (req.decodedToken == null) {
         return res.status(403).send("403 Forbidden");
     } else {
         var user_id = req.params.userid
@@ -380,8 +394,9 @@ app.post('/booking/:userid/:flightid', verifyToken, (req, res) => {
         var passport = req.body.passport
         var nationality = req.body.nationality
         var age = req.body.age
+        var promotion_id = req.body.promotion_id
 
-        Booking.insertBooking(user_id, flight_id, name, passport, nationality, age, (err, result) => {
+        Booking.insertBooking(user_id, flight_id, name, passport, nationality, age, promotion_id, (err, result) => {
             if (err) {
                 console.log(err)
                 res.status(500).send("500 Internal Server Error");
@@ -547,7 +562,7 @@ app.delete('/promotion/flight/:flightid', verifyToken, (req, res) => {
 // # Review API
 
 // • Endpoint 18 - POST /review/:flightid/:userid
-app.post('/review/:flightid/:userid', (req, res) => {
+app.post('/review/:flightid/:userid', verifyToken, (req, res) => {
     var flight_id = req.params.flightid;
     var user_id = req.params.userid;
     var rating = req.body.rating;
@@ -570,24 +585,7 @@ app.get('/review/:flightid', (req, res) => {
         if (err) {
 
             if (err == "No reviews") {
-                res.status(404).send({"Message": "No reviews for this flight"})
-                return;
-            }
-            res.status(500).send("500 Internal Server Error");
-            return;
-        }
-        res.status(200).send(result);
-    })
-})
-
-// • Endpoint 20 - GET /review/
-app.get('/review/', (req, res) => {
-
-    Review.getAllReview((err, result) => {
-        if (err) {
-
-            if (err == "No reviews") {
-                res.status(404).send({"Message": "No reviews for this flight"})
+                res.status(200).send({"Message": "No reviews for this flight"})
                 return;
             }
             res.status(500).send("500 Internal Server Error");
@@ -598,13 +596,30 @@ app.get('/review/', (req, res) => {
 })
 
 // ! NOT PART OF REQUIREMENT
-// • Endpoint 21 - GET /flight (Gets all flights)
+// • Endpoint 20 - GET /flight (Gets all flights)
 app.get('/flight', (req, res) => {
     Flight.getAllFlights((err, result) => {
         if (err) {
             if (err == "No flights") {
                 res.status(200).send({"Message": "No flights in database"})
                 return
+            }
+            res.status(500).send("500 Internal Server Error");
+            return;
+        }
+        res.status(200).send(result);
+    })
+})
+
+// • Endpoint 21 - GET /review/
+app.get('/review/', (req, res) => {
+
+    Review.getAllReview((err, result) => {
+        if (err) {
+
+            if (err == "No reviews") {
+                res.status(200).send({"Message": "No reviews for this flight"})
+                return;
             }
             res.status(500).send("500 Internal Server Error");
             return;
@@ -644,6 +659,137 @@ app.get('/promotion/flight', verifyToken, (req, res) => {
     })
 })
 
+
+// • Endpoint 24 - DEL /user/:userid
+app.delete("/user/:userid", verifyToken, (req, res) => {
+    var user_id = req.params.userid;
+
+    if (req.decodedToken.role != "admin" || req.decodedToken == null) {
+        return res.status(403).send("403 Forbidden");
+    } else {
+        var user_id = req.params.userid;
+
+        User.deleteUser(user_id, (err, result) => {
+            if (err) {
+                if (err == "Cannot delete admin") {
+                    res.status(400).send({"Message": "Cannot delete admin"})
+                    return;
+                }
+                res.status(500).send("500 Internal Server Error");
+                return;
+            }
+            
+            res.status(200).send({"Message": "Deletion successful"});
+        })
+    }
+})
+
+// • Endpoint 25 - DEL /airport/:airportid
+app.delete('/airport/:airportid', verifyToken, (req, res) => {
+    var airport_id = req.params.airportid;
+    
+    Airport.deleteAirport(airport_id, (err, result) => {
+        if (err) {
+            res.status(500).send("500 Internal Server Error");
+            return;
+        }
+        res.status(200).send({"Message": "Deletion successful"});
+    })
+})
+
+// • Endpoint 26 - DEL /booking/:bookingid
+app.delete('/booking/:bookingid', verifyToken, (req, res) => {
+    var booking_id = req.params.bookingid;
+
+    Booking.deleteBooking(booking_id, (err, result) => {
+        if (err) {
+            res.status(500).send("500 Internal Server Error");
+            return;
+        }
+        res.status(200).send({"Message": "Deletion successful"});
+    })
+})
+
+// • Endpoint 27 - DEL /review/:reviewid
+app.delete('/review/:reviewid', verifyToken, (req, res) => {
+    var review_id = req.params.reviewid;
+
+    Review.deleteReview(review_id, (err, result) => {
+        if (err) {
+            res.status(500).send("500 Internal Server Error");
+            return;
+        }
+        res.status(200).send({"Message": "Deletion successful"});
+    })
+})
+
+// • Endpoint 28 - GET /airport/:airportid
+app.get("/airport/:airportid", (req, res) => {
+    var airport_id = req.params.airportid;
+
+    Airport.getAirportById(airport_id, (err, result) => {
+        if (err) {
+            if (err == "No airport") {
+                res.status(200).send({"Message": "No airport in database"})
+                return
+            }
+            res.status(500).send("500 Internal Server Error");
+            return;
+        }
+        res.status(200).send(result);
+    })
+})
+
+// • Endpoint 29 - GET /flight/:flightid
+app.get("/flight/:flightid", (req, res) => {
+    var flight_id = req.params.flightid;
+
+    Flight.getFlightById(flight_id, (err, result) => {
+        if (err) {
+            if (err == "No flight") {
+                res.status(200).send({"Message": "No flight in database"})
+                return
+            }
+            res.status(500).send("500 Internal Server Error");
+            return;
+        }
+        res.status(200).send(result);
+    })
+})
+
+// • Endpoint 30 - GET /promotion/:promotionid
+app.get("/promotion/:promotionid", (req, res) => {
+    var promotion_id = req.params.promotionid;
+
+    Promotion.getPromotionById(promotion_id, (err, result) => {
+        if (err) {
+            if (err == "No promotion") {
+                res.status(200).send({"Message": "No promotion in database"})
+                return
+            }
+            res.status(500).send("500 Internal Server Error");
+            return;
+        }
+        res.status(200).send(result);
+    })
+})
+
+// • Endpoint 31 - GET /booking/:bookingid
+app.get("/booking/:userid", verifyToken, (req, res) => {
+    var user_id = req.params.userid;
+
+    Booking.getBookingById(user_id, (err, result) => {
+        if (err) {
+            if (err == "No booking") {
+                res.status(200).send({"Message": "No booking in database"})
+                return
+            }
+            res.status(500).send("500 Internal Server Error");
+            return;
+        }
+        res.status(200).send(result);
+    })
+})
 
 // #########################################################################################################################
 

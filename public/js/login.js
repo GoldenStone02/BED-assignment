@@ -14,11 +14,7 @@ $(document).ready(() => {
     } else {
         $("#remMe").prop("checked", false);
     }
-    // Transfer to profile page
 
-    // Get user info from local storage    
-
-    // Request from server to get user info
 });
 
 // For the sign up page

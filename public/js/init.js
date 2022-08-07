@@ -5,6 +5,7 @@
 */
 
 const baseURL = "http://localhost:8080";
+var user_id;
 
 $(document).ready(() => {
     // Check if the user is logged in
@@ -51,6 +52,7 @@ var getRole = async () => {
         })
         .then((response) => {
             role = response.data.role
+            user_id = response.data.user_id
             if (role == "admin") {
                 // Show the admin control panel
                 // Ensure that the admin routes are protected
@@ -58,7 +60,7 @@ var getRole = async () => {
                 $("#accHandler").prepend(`
                 <div class="nav-item">
                     <a href="/admin-panel" class="nav-link mx-3">
-                        <span data-toggle="tooltip" title="Settings">
+                        <span data-toggle="tooltip" title="Admin Panel">
                         <i class="fa-solid fa-gear"></i>
                         </span>
                     </a>

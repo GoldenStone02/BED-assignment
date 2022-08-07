@@ -53,13 +53,13 @@ const flightDB = {
     // .. GET flight information
     getFlightDirect: function (origin_airport_id, destination_airport_id, givenDate, callback) {
         console.log("Connected! Getting flight information...");
-        var params = [origin_airport_id, destination_airport_id, givenDate];
+        var params = [origin_airport_id, destination_airport_id, givenDate, givenDate];
         var sql = `
         SELECT f.flight_id, f.flightCode, f.aircraft, a1.name as originAirport, a2.name as destinationAirport, f.embarkDate, f.travelTime, f.price, a1.country as originCountry, a2.country as destinationCountry
         FROM flight as f, airport as a1, airport as a2 
         WHERE originAirport = ? AND destinationAirport = ? 
         AND f.originAirport = a1.airport_id AND f.destinationAirport = a2.airport_id
-        AND f.embarkDate >= ?`;
+        AND f.embarkDate >= ? AND f.embarkDate < DATE_ADD(?, INTERVAL 1 DAY)`;
 
         pool.query(sql, params, (err, result) => {
             if (err) {
@@ -76,11 +76,35 @@ const flightDB = {
             return callback(null, result)
         })
     },
+    // .. GET flight by id
+    getFlightById: function (flight_id, callback) {
+        console.log("Connected! Getting flight information...");
+        var params = [flight_id];
+        var sql = `
+        SELECT f.flight_id, f.flightCode, f.aircraft, a1.name as originAirport, a2.name as destinationAirport, f.embarkDate, f.travelTime, f.price, a1.country as originCountry, a2.country as destinationCountry
+        FROM flight as f, airport as a1, airport as a2 
+        WHERE f.flight_id = ? 
+        AND f.originAirport = a1.airport_id AND f.destinationAirport = a2.airport_id`;
+
+        pool.query(sql, params, (err, result) => {
+            if (err) {
+                console.log(err)
+                return callback(err, null)
+            }
+            if (result.length == 0) {
+                console.log("No flights found")
+                return callback("No flights", null)
+            }
+            console.table(result)
+            return callback(null, result)
+        }
+        )
+    },
     // .. DELETE flights and its associated bookings
     deleteFlight: function (flight_id, callback) {
         console.log("Connected! Deleting flight...");
-        var sql = "DELETE FROM booking WHERE flight_id = ?; DELETE FROM flight WHERE flight_id = ?";
-        pool.query(sql, [flight_id, flight_id], (err, result) => {
+        var sql = "DELETE FROM booking WHERE flight_id = ?; DELETE FROM flight WHERE flight_id = ?; DELETE FROM review WHERE flight_id = ?";
+        pool.query(sql, [flight_id, flight_id, flight_id], (err, result) => {
             if (err) {
                 console.log(err)
                 return callback(err, null)

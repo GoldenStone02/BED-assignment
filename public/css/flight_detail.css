@@ -1,0 +1,189 @@
+/* Shift this to flight details */
+.timeline_circles {
+    display: flex;
+    padding-top: 0.375rem;
+    padding-right: 1.125rem;
+    padding-bottom: 0.375rem;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.timeline_circles:after, .timeline_circles:before {
+    content: "";
+    display: block;
+    z-index: 2;
+    width: 0.625rem;
+    height: 0.625rem;
+    border: 0.125rem solid #b2b2bf;
+    border-radius: 100%;
+    background: #fff;
+}
+
+.timeline_track {
+    position: relative;
+    left: 0.25rem;
+    display: flex;
+    flex-grow: 1;
+}
+
+.timeline_track:after {
+    position: relative;
+    content: "";
+    width: 0.125rem;
+    background-color: #b2b2bf;
+}
+
+/* Login Modal CSS */
+
+.modal-confirm-login {		
+	color: #636363;
+	width: 400px;
+}
+.modal-confirm-login .modal-content {
+	padding: 20px;
+	border-radius: 5px;
+	border: none;
+	text-align: center;
+	font-size: 14px;
+}
+.modal-confirm-login .modal-header {
+	border-bottom: none;   
+	position: relative;
+}
+.modal-confirm-login h4 {
+	text-align: center;
+	font-size: 26px;
+	margin: 30px 0 -10px;
+}
+.modal-confirm-login .close {
+	position: absolute;
+	top: -5px;
+	right: -2px;
+}
+.modal-confirm-login .modal-body {
+	color: #999;
+}
+.modal-confirm-login .modal-footer-delete {
+	border: none;
+	text-align: center;		
+	border-radius: 5px;
+	font-size: 13px;
+	padding: 10px 15px 25px;
+}
+.modal-confirm-login .modal-footer-delete a {
+	color: #999;
+}		
+.modal-confirm-login .icon-box {
+	width: 80px;
+	height: 80px;
+	margin: 0 auto;
+	border-radius: 50%;
+	z-index: 9;
+	text-align: center;
+	border: 3px solid #f15e5e;
+}
+.modal-confirm-login .icon-box i {
+	color: #f15e5e;
+	font-size: 46px;
+	display: inline-block;
+	margin-top: 13px;
+}
+.modal-confirm-login .btn, .modal-confirm-login .btn:active {
+	color: #fff;
+	border-radius: 4px;
+	background: #60c7c1;
+	text-decoration: none;
+	transition: all 0.4s;
+	line-height: normal;
+	min-width: 120px;
+	border: none;
+	min-height: 40px;
+	border-radius: 3px;
+	margin: 0 5px;
+}
+.modal-confirm-login .btn-secondary {
+	background: #c1c1c1;
+}
+.modal-confirm-login .btn-secondary:hover, .modal-confirm-login .btn-secondary:focus {
+	background: #a8a8a8;
+}
+.modal-confirm-login .btn-danger {
+	background: #f15e5e;
+}
+.modal-confirm-login .btn-danger:hover, .modal-confirm-login .btn-danger:focus {
+	background: #ee3535;
+}
+
+/* Success Modal */
+
+.modal-success {		
+	color: #636363;
+	width: 325px;
+	font-size: 14px;
+}
+.modal-success .modal-content {
+	padding: 20px;
+	border-radius: 5px;
+	border: none;
+}
+.modal-success .modal-header {
+	border-bottom: none;   
+	position: relative;
+}
+.modal-success h4 {
+	text-align: center;
+	font-size: 26px;
+	margin: 30px 0 -15px;
+}
+.modal-success .form-control, .modal-success .btn {
+	min-height: 40px;
+	border-radius: 3px; 
+}
+.modal-success .close {
+	position: absolute;
+	top: -5px;
+	right: -5px;
+}	
+.modal-success .modal-footer {
+	border: none;
+	text-align: center;
+	border-radius: 5px;
+	font-size: 13px;
+}	
+.modal-success .icon-box {
+	color: #fff;		
+	position: absolute;
+	margin: 0 auto;
+	left: 0;
+	right: 0;
+	top: -70px;
+	width: 95px;
+	height: 95px;
+	border-radius: 50%;
+	z-index: 9;
+	background: #82ce34;
+	padding: 15px;
+	text-align: center;
+	box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.1);
+}
+.modal-success .icon-box i {
+	font-size: 58px;
+	position: relative;
+	top: 3px;
+}
+.modal-success.modal-dialog {
+	margin-top: 80px;
+}
+.modal-success .btn {
+	color: #fff;
+	border-radius: 4px;
+	background: #82ce34;
+	text-decoration: none;
+	transition: all 0.4s;
+	line-height: normal;
+	border: none;
+}
+.modal-success .btn:hover, .modal-success .btn:focus {
+	background: #6fb32b;
+	outline: none;
+}

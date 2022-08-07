@@ -153,8 +153,9 @@ Endpoints References
 
 > HTML and CSS Sources
 
-# References
+# References sites
 # https://www.expedia.com/Flights
+# https://www.singaporeair.com/en_UK/sg/home#/book/bookflight
 
 # Navbar CSS and HTML
 # https://www.tutorialrepublic.com/snippets/preview.php?topic=bootstrap&file=navbar-dropdown-login-and-signup-form-with-social-buttons
@@ -163,6 +164,10 @@ Endpoints References
 # https://library.livecanvas.com/sections?s=footer
 
 # Possible snippets
-https://epicbootstrap.com/snippets
+# https://epicbootstrap.com/snippets
+# https://www.devwares.com/docs/contrast/javascript/components/stepper/ 
+# https://www.codermen.com/how-to-add-and-remove-required-in-jquery/
+# https://www.tutorialrepublic.com/snippets/preview.php?topic=bootstrap&file=simple-success-confirmation-popup
+# https://www.tutorialrepublic.com/snippets/preview.php?topic=bootstrap&file=simple-error-confirmation-popup
 
 # AXIOS REFERENCES

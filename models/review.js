@@ -24,9 +24,10 @@ const reviewDB = {
     // .. GET /review/:flightid
     getReviewsForFlight: function (flight_id, callback) {
         var params = [flight_id]
-        var sql = `SELECT r.review_id, u.user_id, u.username, r.flight_id, r.rating, r.review_text 
+        var sql = `SELECT r.review_id, u.user_id, u.username, r.flight_id, r.rating, r.review_text, r.created_at
         FROM review as r, user as u 
-        WHERE r.flight_id = ? AND r.user_id = u.user_id;`
+        WHERE r.flight_id = ? AND r.user_id = u.user_id
+        ORDER BY r.created_at DESC;`
         pool.query(sql, params, (err, result) => {
             if (err) {
                 console.log(err);
@@ -43,7 +44,7 @@ const reviewDB = {
         })
     },
     getAllReview: function (callback) {
-        var sql = `SELECT r.review_id, u.user_id, u.username, r.flight_id, r.rating, r.review_text 
+        var sql = `SELECT r.review_id, u.user_id, u.username, r.flight_id, r.rating, r.review_text
         FROM review as r, user as u 
         WHERE r.user_id = u.user_id;`
         pool.query(sql, (err, result) => {
@@ -59,6 +60,18 @@ const reviewDB = {
 
             console.table(result)
             return callback(null, result);
+        })
+    },
+    deleteReview: function (review_id, callback) {
+        var sql = `DELETE FROM review WHERE review_id = ?`
+        pool.query(sql, [review_id], (err, result) => {
+            if (err) {
+                console.log(err);
+                return callback(err, null);
+            }
+            console.log(`${result.affectedRows} row has been affected`);
+            console.table(result)
+            return callback(null, result.affectedRows);
         })
     }
 }

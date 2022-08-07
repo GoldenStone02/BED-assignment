@@ -48,6 +48,18 @@ const promotionDB = {
             return callback(null, result);
         })
     },
+    getPromotionById: function (promotion_id, callback) {
+        console.log("Connected! Getting a promotion by promotion_id...");
+        var sql = `SELECT * FROM promotion WHERE promotion_id = ?`;
+        pool.query(sql, [promotion_id], (err, result) => {
+            if (err) {
+                console.log(err);
+                return callback(err, null);
+            }
+            console.table(result)
+            return callback(null, result);
+        })
+    },
     deletePromotion: function (promotion_id, callback) {
         console.log("Connected! Deleting promotion...");
         var params = [promotion_id, promotion_id]
@@ -64,6 +76,18 @@ const promotionDB = {
         })
     },
     // # For flight_promotion
+    getAllFlightPromotion: function (callback) {
+        console.log("Connected! Getting all flight promotions...");
+        var sql = `SELECT flight_id, promotion_id FROM flight_promotion`;
+        pool.query(sql, (err, result) => {
+            if (err) {
+                console.log(err);
+                return callback(err, null);
+            }
+            console.table(result)
+            return callback(null, result);
+        } )
+    },
     getPromotionByFlightID: function (flight_id, callback) {
         console.log("Connected! Getting promotion...");
         var params = [flight_id];
@@ -78,10 +102,6 @@ const promotionDB = {
                 return callback(err, null)
             }
             console.table(result)
-            // There are multiple promotions for a flight
-            if (result.length > 1) {
-                // Calculate them all together
-            }
             return callback(null, result)
         })
     },
@@ -136,18 +156,6 @@ const promotionDB = {
             return callback(null, result.affectedRows);
         })
     },
-    getAllFlightPromotion: function (callback) {
-        console.log("Connected! Getting all flight promotions...");
-        var sql = `SELECT flight_id, promotion_id FROM flight_promotion`;
-        pool.query(sql, (err, result) => {
-            if (err) {
-                console.log(err);
-                return callback(err, null);
-            }
-            console.table(result)
-            return callback(null, result);
-        } )
-    }
 }
 
 module.exports = promotionDB

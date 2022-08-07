@@ -1,7 +1,22 @@
 # SP Air
-This my CA1 assignment for my backend development module where we're supposed to layout the backend foundations for a fullstack web application using Express and MySQL.
+This my CA2 assignment for my backend development module where we're supposed to layout the backend foundations for a fullstack web application using Express and MySQL.
+We would then create our frontend using HTML, CSS and Bootstrap, and connect it to our database using JQuery and Axios.
 
-## Features
+## Setting Up
+- Run `npm i` to install all dependencies in terminal
+- Run `db_init.sql` to build the database schema
+- Update `.env` with your desired hosting port, DB user and password
+- `node server.js` to start the server
+
+## Modules and Libraries Used
+- Bootstrap
+- Axios
+- JQuery
+- Font Awesome
+- VantaJS
+- MomentJS
+
+## Endpoints
 These are the features that are included in the project.
 ### Basic Endpoints
 - `Endpoint 1 - POST /users`
@@ -11,13 +26,13 @@ These are the features that are included in the project.
 - `Endpoint 5 - POST /airport`
 - `Endpoint 6 - GET /airport`
 - `Endpoint 7 - POST /flight`
-- `Endpoint 8 - GET /flightDirect/:originAirportId/:destinationAirportId`
+- `Endpoint 8 - GET /flightDirect/:date/:originAirportId/:destinationAirportId`
 - `Endpoint 9 - POST /booking/:userid/:flightid`
 - `Endpoint 10 - DELETE /flight/:id`
 - `Endpoint 11 - GET /transfer/flight/:originAirportId/:destinationAirportId`
 
 
-### Advanced Features
+### Additional Endpoints
 - Filters the optimal transfer flight with criterias such as `embarkDate` and `price` from the database.
 - Additional Validation within endpoints
 - Image Uploading and Storage
@@ -35,36 +50,63 @@ These are the features that are included in the project.
     - `Endpoint 19 - GET /review/:flightid`
 - Additional Endpoints
     - `Endpoint 20 - GET /flight (Gets all flights)`
+- Additional APIs for Admin Panel
+    - `Endpoint 21 - GET /admin/users`
+    - `Endpoint 21 - GET /review/`
+    - `Endpoint 22 - GET /booking`
+    - `Endpoint 23 - GET /promotion/flight`
+    - `Endpoint 24 - DEL /user/:userid`
+    - `Endpoint 25 - DEL /airport/:airportid`
+    - `Endpoint 26 - DEL /booking/:bookingid`
+    - `Endpoint 27 - DEL /review/:reviewid`
+- Additional APIs for Flight Details 
+    - `Endpoint 28 - GET /airport/:airportid`
+    - `Endpoint 29 - GET /flight/:flightid`
+    - `Endpoint 30 - GET /promotion/:promotionid`
+    - `Endpoint 31 - GET /booking/:bookingid`
 
 ## File Structure
 ```
 BED Project/
-├── controller/                 # App Routes
+├── auth/                       # Authentication [CA2]
+│   └── verifyToken.js
+├── controller/                 # App Endpoints and Routing [CA2]
 │   └── app.js
 ├── db/                         # Database Setup
 │   └── db_init.sql
-├── img/                        # Image Storage
+├── img/                        # Server-side Image Storage
 ├── models/                     # Models to query the DB
 │   ├── airport.js
 │   ├── booking.js
 │   ├── databaseConfig.js
 │   ├── flight.js
 │   ├── image.js                # Image Checker
-│   ├── promotion.js            # Bonus Requirement
-│   ├── review.js               # Advanced Feature
+│   ├── promotion.js            # Bonus Requirement [CA1]
+│   ├── review.js               # Advanced Feature [CA1]
 │   ├── transfer.js
 │   └── user.js
 ├── node_modules/
+├── public/                     # Folder that is served publicly [CA2]
+│   ├── css/
+│   ├── img/                    # Static website images
+│   ├── js/                     # JQuery and Axios API calls
+│   ├── admin.html
+│   ├── ...
+│   └── index.html              # HTML files in /public
+├── .env                        # Environmental Variables
+├── .env.sample                 # Instructions for setting up .env
 ├── .gitignore
 ├── notes.txt                   # Notes taken during the project
 ├── package-lock.json
 ├── package.json
 ├── README.md
-└── server.js                   # File to run
+└── server.js                   # File to startup server
 ```
 
-## Setting Up
-- Run `npm i` to install all dependencies in terminal
-- Run `db_init.sql` to build the database schema
-- Update `.env` with your desired hosting port, DB user and password
-- `node server.js` to start the server
+
+## Test Accounts
+| Email | Password | Role
+| --- | --- | --- |
+| admin@sp_air.com | password123 | Admin |
+| user@sp_air.com | password123 | customer |
+| ultraraptor@sp_air.com | password123 | customer |

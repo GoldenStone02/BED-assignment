@@ -39,17 +39,16 @@ var getData = async () => {
         .get(`${baseURL}/airport`)
         .then((response) => {
             var unsorted_list = response.data
-
             for (let i = 0; i < unsorted_list.length; i++) {
                 var airport = unsorted_list[i]
                 $("#departureAirport").append(`
                 <option value="${airport.airport_id}">
-                    ${airport.country}
+                    ${airport.name}
                 </option>
                 `)
                 $("#arrivalAirport").append(`
                 <option value="${airport.airport_id}">
-                    ${airport.country}
+                    ${airport.name}
                 </option>
                 `)
             }
@@ -92,6 +91,7 @@ $("#flight-search").on("click", () => {
             $(".modal-text-body").text("Please fill in your departure date.")
             return
         }
+
 
         // Redirects to the browse-flights
         window.location.href = "/browse-flights?origin=" + originAirport_id + 

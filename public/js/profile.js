@@ -8,8 +8,9 @@ $(document).ready(() => {
     if (!localStorage.getItem("token")) {
         window.location.href = "/login";
     }
-    loadProfile();
 
+    loadProfile();
+    getBookings();
 });
 
 // Note the user can still type the characer "e" or "E"
@@ -22,7 +23,7 @@ var loadProfile = async () => {
             }
         })
         .then((response) => {
-            console.log(response.data);
+            console.log(response.data)
             return response.data;
         })
         .catch((err) => {
@@ -96,6 +97,96 @@ var loadProfile = async () => {
     await $("#placeholder2").remove()
     await $("#profilePic").removeClass("skeleton")
 };
+
+var getBookings = async () => {
+    var {user_id, role} = await axios
+        .get(`${baseURL}/verifyHeader`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            }
+        })
+        .then((response) => {
+            return response.data;
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+    
+    // Get the bookings of the user
+    await axios
+        .get(`${baseURL}/booking/${user_id}`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            }
+        })
+        .then((response) => {
+            if (response.data.Message == "No booking in database") {
+                $("#booking").append(`
+                <div class="alert alert-info text-center">
+                    You have no bookings.
+                </div>
+                `);
+            } else {
+                response.data.forEach((booking) => {
+                    // Request for flight details
+                    axios
+                        .get(`${baseURL}/flight/${booking.flight_id}`)
+                        .then((response) => {
+                            flight = response.data[0]
+                            console.log("test")
+                            console.log(flight)
+                            
+                            if (booking.promotion_id == null) {
+                                $("#booking").append(`
+                                <div class="col-4">
+                                    <div class="card text-center mt-2">
+                                        <div class="card-body">
+                                            <h5 class="card-title"><b>${flight.originAirport}</b> to <b>${flight.destinationAirport}</b></h5>
+                                            <p class="card-text"><b>Embark Date</b> ${moment(flight.embarkDate).format("ddd DD MMM YYYY, HH:mm a")}</h6>
+                                            <p class="card-text"><b>Booked at</b> ${moment(booking.created_at).format("ddd DD MMM YYYY, HH:mm a")}</h6>
+                                            <p class="card-text"><b>Passport:</b> *****${booking.passport.slice(booking.passport.length - 4)}</p>
+                                            <p class="card-text"><b>Price:</b> SGD ${flight.price}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                `);
+                            } else {
+                                // Get the promotion details
+                                axios
+                                    .get(`${baseURL}/promotion/${booking.promotion_id}`)
+                                    .then((response) => {
+                                        console.log(response.data[0])
+    
+                                        $("#booking").append(`
+                                        <div class="col-4">
+                                            <div class="card text-center mt-2">
+                                                <div class="card-body">
+                                                    <h5 class="card-title"><b>${flight.originAirport}</b> to <b>${flight.destinationAirport}</b></h5>
+                                                    <p class="card-text"><b>Embark Date</b> ${moment(flight.embarkDate).format("ddd DD MMM YYYY, HH:mm a")}</h6>
+                                                    <p class="card-text"><b>Booked at</b> ${moment(booking.created_at).format("ddd DD MMM YYYY, HH:mm a")}</h6>
+                                                    <p class="card-text"><b>Passport:</b> *****${booking.passport.slice(booking.passport.length - 4)}</p>
+                                                    <p class="card-text"><b>Price:</b> SGD ${flight.price}</p>
+                                                    <p class="card-text"><b>Discount:</b> ${response.data[0].discount_percent}%</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        `);
+                                    })
+                                    .catch((err) => {
+                                        console.log(err)
+                                    })
+                            }
+                        })
+                        .catch((err) => {
+                            console.log(err)
+                        })
+                })
+            }
+        })
+        .catch((err) => {
+            console.log(err)
+        })
+}
 
 // Make fields editable
 // Password field is hidden by default
@@ -181,6 +272,8 @@ $("#saveBtn").on("click", async () => {
                     $("#username").attr("readonly", true);
                     $("#email").attr("readonly", true);
                     $("#contact").attr("readonly", true);
+
+                    // ! Input Validation
 
                     updateProfile()
                     // window.location.reload()
@@ -302,6 +395,7 @@ var updateProfile = async () => {
         })
     console.log("Sent password")
     console.log($("#password").val())
+
     await axios
         .put(
             `${baseURL}/users/${user_id}`,
