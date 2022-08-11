@@ -14,9 +14,9 @@ please refer to the README.md within this folder
 // .. [ ] Change the travelTime to be accurate if incorrect data is put in.
 .. [x] Could add a embarkDate filter button
 .. [x] Add Environmental Variables for DB
-.. [ ] Add in JWT authentication
-.. [ ] Create all the HTML files
-.. [ ] Connect backend to frontend
+.. [x] Add in JWT authentication
+.. [x] Create all the HTML files
+.. [x] Connect backend to frontend
 
 > Requirements
 .. Create a MYSQL database with necessary tables
@@ -133,7 +133,7 @@ Endpoints References
 
 > Some Useful Resources
 
-# Leonard's resources for adding images to database
+# Other People's resources for adding images to database
 ! Could be used if I were to create a new file
 # https://javascript.plainenglish.io/upload-images-in-your-node-app-e05d0423fd4a 
 # http://expressjs.com/en/resources/middleware/multer.html

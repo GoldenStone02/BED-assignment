@@ -1,9 +1,3 @@
-/*
-    Name: Ng Jun Han
-    Admin: 2008493
-    Class: DISM/FT/2B/21
-*/
-
 // Function used to read url params
 // Source for following function: Sitepoint (https://www.sitepoint.com/url-parameters-jquery/)
 $.urlParam = function (name) {

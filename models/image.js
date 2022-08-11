@@ -1,9 +1,3 @@
-/*
-    Name: Ng Jun Han
-    Admin: 2008493
-    Class: DISM/FT/2B/21
-*/
-
 const path = require('path')
 const fileTypes = [["JFIF", "jpg"], ["PNG", "png"]]
 const maxFileSize = 1000000

@@ -1,9 +1,3 @@
-/*
-    Name: Ng Jun Han
-    Admin: 2008493
-    Class: DISM/FT/2B/21
-*/
-
 $(document).ready(() => {
 
     // Redirects when user is not logged into admin

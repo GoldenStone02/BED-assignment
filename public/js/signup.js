@@ -1,9 +1,3 @@
-/*
-    Name: Ng Jun Han
-    Admin: 2008493
-    Class: DISM/FT/2B/21
-*/
-
 // For the sign up page
 var input = () => {
     // If error is detected, hide the error message
